@@ -217,7 +217,7 @@ const Dashboard = () => {
                         <span className="text-sm font-medium">Spese</span>
                         <span className="text-sm font-medium">€1.500,00</span>
                       </div>
-                      <Progress value={75} className="h-2 bg-gray-200" indicatorColor="bg-amber-500" />
+                      <Progress value={75} className="h-2 bg-gray-200 [&>div]:bg-amber-500" />
                     </div>
                     <div>
                       <div className="flex justify-between mb-1">
