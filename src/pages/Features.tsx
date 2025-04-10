@@ -4,8 +4,9 @@ import AIChatDemo from '@/components/features/AIChatDemo';
 import BudgetSimulator from '@/components/features/BudgetSimulator';
 import FuturePlanning from '@/components/features/FuturePlanning';
 import CryptoOption from '@/components/features/CryptoOption';
+import EducationalPath from '@/components/features/EducationalPath';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MessageSquare, Calculator, CalendarDays, Bitcoin } from 'lucide-react';
+import { MessageSquare, Calculator, CalendarDays, Bitcoin, GraduationCap } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const Features = () => {
@@ -30,7 +31,7 @@ const Features = () => {
       <section className="py-16">
         <div className="container-custom">
           <Tabs defaultValue="chat" className="w-full">
-            <TabsList className="grid grid-cols-2 md:grid-cols-4 mb-8">
+            <TabsList className="grid grid-cols-2 md:grid-cols-5 mb-8">
               <TabsTrigger value="chat" className="flex items-center gap-2">
                 <MessageSquare className={`${isMobile ? 'h-4 w-4' : 'h-5 w-5'}`} />
                 {!isMobile && <span>Chat AI</span>}
@@ -46,6 +47,10 @@ const Features = () => {
               <TabsTrigger value="crypto" className="flex items-center gap-2">
                 <Bitcoin className={`${isMobile ? 'h-4 w-4' : 'h-5 w-5'}`} />
                 {!isMobile && <span>Opzione Crypto</span>}
+              </TabsTrigger>
+              <TabsTrigger value="education" className="flex items-center gap-2">
+                <GraduationCap className={`${isMobile ? 'h-4 w-4' : 'h-5 w-5'}`} />
+                {!isMobile && <span>Educazione</span>}
               </TabsTrigger>
             </TabsList>
             
@@ -92,6 +97,17 @@ const Features = () => {
                   </p>
                 </div>
                 <CryptoOption />
+              </TabsContent>
+              
+              <TabsContent value="education">
+                <div className="mb-6">
+                  <h2 className="section-title">Percorso Educativo</h2>
+                  <p className="text-lg text-gray-600 mb-8">
+                    Esplora concetti finanziari fondamentali presentati in modo semplice e chiaro. 
+                    La conoscenza è il primo passo verso una gestione finanziaria consapevole.
+                  </p>
+                </div>
+                <EducationalPath />
               </TabsContent>
             </div>
           </Tabs>
