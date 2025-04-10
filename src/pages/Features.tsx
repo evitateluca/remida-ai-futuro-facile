@@ -1,10 +1,12 @@
-
+import { Button } from '@/components/ui/button';
+import { ArrowRight, Award } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import AIChatDemo from '@/components/features/AIChatDemo';
 import BudgetSimulator from '@/components/features/BudgetSimulator';
-import FuturePlanning from '@/components/features/FuturePlanning';
 import CryptoOption from '@/components/features/CryptoOption';
 import EducationalPath from '@/components/features/EducationalPath';
+import FuturePlanning from '@/components/features/FuturePlanning';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MessageSquare, Calculator, CalendarDays, Bitcoin, GraduationCap } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -15,14 +17,26 @@ const Features = () => {
   return (
     <Layout>
       {/* Hero Section */}
-      <section className="bg-remida-teal text-white py-16">
-        <div className="container-custom">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">Le Nostre Funzionalità</h1>
-            <p className="text-xl">
-              Scopri gli strumenti che ReMida AI mette a tua disposizione per aiutarti a gestire
-              le tue finanze in modo semplice e intelligente.
-            </p>
+      <section className="bg-remida-gray py-20">
+        <div className="container-custom text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-remida-teal mb-6">
+            Le Funzionalità di ReMida AI
+          </h1>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+            Scopri tutti gli strumenti a tua disposizione per migliorare la tua salute finanziaria
+            e costruire un futuro più sereno.
+          </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Button className="bg-remida-orange hover:bg-remida-orange/90 text-lg px-6 py-5" asChild>
+              <Link to="/dashboard">
+                Accedi alla Dashboard <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+            <Button variant="outline" className="border-remida-teal text-remida-teal hover:bg-remida-teal/10 text-lg px-6 py-5 flex items-center" asChild>
+              <Link to="/dashboard">
+                Gamification <Award className="ml-2 h-5 w-5 text-remida-orange" />
+              </Link>
+            </Button>
           </div>
         </div>
       </section>

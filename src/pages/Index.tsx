@@ -1,6 +1,5 @@
-
 import { Button } from '@/components/ui/button';
-import { ArrowRight, ArrowDownCircle, ShieldCheck, TrendingUp } from 'lucide-react';
+import { ArrowRight, ArrowDownCircle, ShieldCheck, TrendingUp, Award } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Layout from '@/components/Layout';
 
@@ -20,7 +19,7 @@ const Index = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button className="bg-remida-orange hover:bg-remida-orange/90 text-lg px-8 py-6" asChild>
-                  <Link to="/features">
+                  <Link to="/dashboard">
                     Inizia Ora <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
@@ -35,7 +34,12 @@ const Index = () => {
               <div className="relative">
                 <div className="bg-white rounded-xl shadow-xl p-6 md:p-8 relative z-10">
                   <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-lg font-semibold">Il tuo Bilancio</h3>
+                    <h3 className="text-lg font-semibold flex items-center">
+                      Il tuo Bilancio 
+                      <Link to="/dashboard" className="ml-2">
+                        <Award className="h-5 w-5 text-remida-orange hover:text-remida-teal transition-colors" />
+                      </Link>
+                    </h3>
                     <span className="text-sm text-gray-500">Luglio 2023</span>
                   </div>
                   <div className="space-y-4">
@@ -128,6 +132,23 @@ const Index = () => {
                 Esplora Tutte le Funzionalità <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </Button>
+          </div>
+          
+          <div className="mt-16 p-6 bg-gray-50 rounded-xl">
+            <h3 className="text-2xl font-semibold text-center text-remida-teal mb-4 flex items-center justify-center">
+              <Award className="mr-2 h-6 w-6 text-remida-orange" />
+              Gamification e Premi
+            </h3>
+            <p className="text-center text-gray-600 mb-6">
+              Accedi alla tua dashboard personale per guadagnare punti, sbloccare badge e raggiungere i tuoi obiettivi finanziari.
+            </p>
+            <div className="flex justify-center">
+              <Button className="bg-remida-teal hover:bg-remida-teal/90" asChild>
+                <Link to="/dashboard">
+                  Vai alla Dashboard <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>
