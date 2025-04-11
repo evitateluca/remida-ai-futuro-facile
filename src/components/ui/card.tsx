@@ -5,48 +5,17 @@ import { cn } from "@/lib/utils"
 
 const Card = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & {
-    gradient?: boolean;
-    glowing?: boolean;
-    achievement?: boolean;
-  }
->(({ className, gradient, glowing, achievement, ...props }, ref) => {
-  const baseClasses = "rounded-lg border bg-card text-card-foreground shadow-sm";
-  
-  let cardClasses = baseClasses;
-  
-  if (gradient) {
-    cardClasses = cn(baseClasses, "bg-gradient-to-br from-remida-teal/5 to-remida-orange/5 border-remida-teal/20");
-  }
-  
-  if (glowing) {
-    cardClasses = cn(baseClasses, "relative overflow-hidden");
-    return (
-      <div
-        ref={ref}
-        className={cn(cardClasses, className)}
-        {...props}
-      >
-        <div className="absolute inset-0 bg-gradient-to-r from-remida-teal/20 via-remida-orange/5 to-remida-teal/20 opacity-30 animate-pulse" />
-        <div className="relative z-10 h-full">
-          {props.children}
-        </div>
-      </div>
-    )
-  }
-  
-  if (achievement) {
-    cardClasses = cn(baseClasses, "border-2 border-remida-orange/50 hover:border-remida-orange transition-all duration-300");
-  }
-  
-  return (
-    <div
-      ref={ref}
-      className={cn(cardClasses, className)}
-      {...props}
-    />
-  )
-})
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn(
+      "rounded-lg border bg-card text-card-foreground shadow-sm",
+      className
+    )}
+    {...props}
+  />
+))
 Card.displayName = "Card"
 
 const CardHeader = React.forwardRef<
@@ -108,4 +77,4 @@ const CardFooter = React.forwardRef<
 ))
 CardFooter.displayName = "CardFooter"
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
+export { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }

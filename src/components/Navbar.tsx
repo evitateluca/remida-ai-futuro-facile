@@ -1,11 +1,20 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Award } from 'lucide-react';
+import { Menu, X, Award, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -45,12 +54,35 @@ const Navbar = () => {
           </nav>
           
           {/* Call to action */}
-          <div className="hidden md:block">
-            <Button className="bg-remida-orange hover:bg-remida-orange/90" asChild>
-              <Link to="/dashboard">
-                Accedi
-              </Link>
-            </Button>
+          <div className="hidden md:flex items-center gap-4">
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={user.user_metadata?.avatar_url} alt={user.email || ''} />
+                      <AvatarFallback>{user.email?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
+                    </Avatar>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem>
+                    <User className="mr-2 h-4 w-4" />
+                    <span>Profilo</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => signOut()}>
+                    <LogOut className="mr-2 h-4 w-4" />
+                    <span>Logout</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button className="bg-remida-orange hover:bg-remida-orange/90" asChild>
+                <Link to="/auth">
+                  Accedi
+                </Link>
+              </Button>
+            )}
           </div>
           
           {/* Mobile menu button */}
@@ -109,11 +141,26 @@ const Navbar = () => {
               >
                 Contatti
               </Link>
-              <Button className="bg-remida-orange hover:bg-remida-orange/90 w-full mt-2" asChild>
-                <Link to="/dashboard" onClick={toggleMobileMenu}>
-                  Accedi
-                </Link>
-              </Button>
+              
+              {user ? (
+                <Button 
+                  variant="destructive" 
+                  onClick={() => {
+                    signOut();
+                    toggleMobileMenu();
+                  }}
+                  className="w-full mt-2"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Logout
+                </Button>
+              ) : (
+                <Button className="bg-remida-orange hover:bg-remida-orange/90 w-full mt-2" asChild>
+                  <Link to="/auth" onClick={toggleMobileMenu}>
+                    Accedi
+                  </Link>
+                </Button>
+              )}
             </nav>
           </div>
         )}
