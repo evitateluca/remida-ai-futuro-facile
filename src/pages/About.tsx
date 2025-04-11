@@ -42,7 +42,7 @@ const About = () => {
             </div>
             <div className="rounded-xl overflow-hidden shadow-lg">
               <img 
-                src="https://images.unsplash.com/photo-1593508195009-0c7dd3d2ff36?auto=format&fit=crop&q=80&w=1000" 
+                src="https://www.money.it/local/cache-gd2/e6/33b7185dcb09b53ae5a10b042b4179.png?1695088188" 
                 alt="Team di ReMida AI" 
                 className="w-full h-auto"
               />
@@ -128,8 +128,8 @@ const About = () => {
             <h2 className="section-title">La Nostra Storia</h2>
             
             <p className="text-lg mb-6 text-gray-600">
-              ReMida AI è nato dall'esperienza personale dei suoi fondatori, un gruppo di giovani professionisti
-              frustrati dalla mancanza di strumenti finanziari veramente imparziali e facili da usare.
+              ReMida AI è nato dall'esperienza personale del suo fondatore, un giovane professionista
+              frustrato dalla mancanza di strumenti finanziari veramente imparziali e facili da usare.
             </p>
             
             <p className="text-lg mb-6 text-gray-600">
