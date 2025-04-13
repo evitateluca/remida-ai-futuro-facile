@@ -1,5 +1,6 @@
+
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -9,8 +10,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
-import { Loader2, User, Settings, LogOut, Shield, Activity } from 'lucide-react';
+import { Loader2, User, Settings, LogOut, Shield, Activity, CreditCard } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { Badge } from '@/components/ui/badge';
 
 interface ProfileData {
   id: string;
@@ -21,6 +24,7 @@ interface ProfileData {
 
 const Profile = () => {
   const { user, loading, signOut } = useAuth();
+  const { subscription, isLoading: subscriptionLoading } = useSubscription();
   const navigate = useNavigate();
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -139,6 +143,17 @@ const Profile = () => {
     );
   }
   
+  const getBadgeForTier = (tier: string) => {
+    switch(tier) {
+      case 'premium':
+        return <Badge className="bg-remida-orange">Premium</Badge>;
+      case 'standard':
+        return <Badge className="bg-remida-teal">Standard</Badge>;
+      default:
+        return <Badge className="bg-gray-500">Gratuito</Badge>;
+    }
+  };
+
   return (
     <Layout>
       <div className="container-custom py-10">
@@ -161,6 +176,16 @@ const Profile = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">Piano</span>
+                  <div>
+                    {subscriptionLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin text-remida-teal" />
+                    ) : (
+                      getBadgeForTier(subscription?.tier || 'free')
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Livello</span>
                   <span className="font-bold text-remida-teal">2</span>
                 </div>
@@ -173,7 +198,15 @@ const Profile = () => {
                   <span className="font-bold text-remida-teal">2/5</span>
                 </div>
               </CardContent>
-              <CardFooter>
+              <CardFooter className="flex flex-col gap-2">
+                <Button 
+                  className="w-full bg-remida-teal hover:bg-remida-teal/90" 
+                  asChild
+                >
+                  <Link to="/pricing">
+                    <CreditCard className="mr-2 h-4 w-4" /> Cambia Piano
+                  </Link>
+                </Button>
                 <Button 
                   onClick={handleLogout} 
                   className="w-full" 
@@ -237,6 +270,53 @@ const Profile = () => {
                           value={formData.fullName} 
                           onChange={handleInputChange}
                         />
+                      </div>
+                      
+                      <div className="space-y-2 border-t pt-4">
+                        <Label>Abbonamento attuale</Label>
+                        <div className="p-4 bg-gray-50 rounded-lg">
+                          {subscriptionLoading ? (
+                            <div className="flex justify-center">
+                              <Loader2 className="h-5 w-5 animate-spin text-remida-teal" />
+                            </div>
+                          ) : (
+                            <>
+                              <div className="flex justify-between items-center mb-2">
+                                <span>Piano</span>
+                                <span className="font-bold capitalize">
+                                  {subscription?.tier || 'free'}
+                                </span>
+                              </div>
+                              {subscription && subscription.tier !== 'free' && (
+                                <>
+                                  <div className="flex justify-between items-center mb-2">
+                                    <span>Fatturazione</span>
+                                    <span className="font-medium capitalize">
+                                      {subscription.billing_cycle === 'monthly' ? 'Mensile' : 'Annuale'}
+                                    </span>
+                                  </div>
+                                  <div className="flex justify-between items-center">
+                                    <span>Scadenza</span>
+                                    <span className="font-medium">
+                                      {subscription.expires_at ? new Date(subscription.expires_at).toLocaleDateString('it-IT') : 'N/D'}
+                                    </span>
+                                  </div>
+                                </>
+                              )}
+                              <div className="mt-3">
+                                <Button 
+                                  asChild
+                                  variant="outline" 
+                                  className="w-full border-remida-teal text-remida-teal hover:bg-remida-teal/10"
+                                >
+                                  <Link to="/pricing">
+                                    Cambia Piano
+                                  </Link>
+                                </Button>
+                              </div>
+                            </>
+                          )}
+                        </div>
                       </div>
                     </CardContent>
                     <CardFooter>

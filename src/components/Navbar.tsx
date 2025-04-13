@@ -41,8 +41,8 @@ const Navbar = () => {
             <Link to="/features" className="text-gray-700 hover:text-remida-teal transition-colors">
               Funzionalità
             </Link>
-            <Link to="/dashboard" className="text-gray-700 hover:text-remida-teal transition-colors flex items-center">
-              <span>Dashboard</span>
+            <Link to="/pricing" className="text-gray-700 hover:text-remida-teal transition-colors flex items-center">
+              <span>Prezzi</span>
               <Award className="ml-1 h-4 w-4 text-remida-orange" />
             </Link>
             <Link to="/faq" className="text-gray-700 hover:text-remida-teal transition-colors">
@@ -66,9 +66,11 @@ const Navbar = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem>
-                    <User className="mr-2 h-4 w-4" />
-                    <span>Profilo</span>
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile">
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Profilo</span>
+                    </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => signOut()}>
                     <LogOut className="mr-2 h-4 w-4" />
@@ -120,11 +122,11 @@ const Navbar = () => {
                 Funzionalità
               </Link>
               <Link 
-                to="/dashboard" 
+                to="/pricing" 
                 className="text-gray-700 hover:text-remida-teal transition-colors py-2 flex items-center"
                 onClick={toggleMobileMenu}
               >
-                <span>Dashboard</span>
+                <span>Prezzi</span>
                 <Award className="ml-1 h-4 w-4 text-remida-orange" />
               </Link>
               <Link 
