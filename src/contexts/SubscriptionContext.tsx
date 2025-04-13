@@ -21,7 +21,7 @@ interface SubscriptionContextType {
   refetchSubscription: () => Promise<void>;
 }
 
-const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
+const SubscriptionContext = createContext<SubscriptionType | undefined>(undefined);
 
 export function SubscriptionProvider({ children }: { children: React.ReactNode }) {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
@@ -48,7 +48,12 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
         throw error;
       }
 
-      setSubscription(data);
+      if (data) {
+        // Type assertion to ensure the data matches our Subscription interface
+        setSubscription(data as Subscription);
+      } else {
+        setSubscription(null);
+      }
     } catch (error) {
       console.error('Error fetching subscription:', error);
       toast({
@@ -87,8 +92,8 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
         throw error;
       }
 
-      setSubscription(data);
-      return data;
+      // Type assertion to ensure the data matches our Subscription interface
+      setSubscription(data as Subscription);
     } catch (error) {
       console.error('Error updating subscription:', error);
       throw error;
