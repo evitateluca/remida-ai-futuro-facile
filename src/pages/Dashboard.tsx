@@ -1,6 +1,9 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
+import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import {
   ArrowRight,
   TrendingUp,
@@ -14,14 +17,23 @@ import {
   Landmark,
   BarChart3,
   Calendar,
+  ArrowUpRight,
+  ArrowDownRight,
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { toast } from '@/hooks/use-toast';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const Dashboard = () => {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  const [profileData, setProfileData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  
   // Stato per tenere traccia dei livelli e punti utente
   const [userLevel, setUserLevel] = useState(2);
   const [userPoints, setUserPoints] = useState(120);
@@ -49,6 +61,92 @@ const Dashboard = () => {
     { name: 'Investitore', icon: <TrendingUp className="h-5 w-5" />, unlocked: false },
     { name: 'Obiettivo Completato', icon: <Target className="h-5 w-5" />, unlocked: false },
   ];
+  
+  // Dati per i grafici
+  const monthlyData = [
+    { name: 'Gen', income: 1900, expenses: 1700, savings: 200 },
+    { name: 'Feb', income: 1950, expenses: 1650, savings: 300 },
+    { name: 'Mar', income: 2000, expenses: 1600, savings: 400 },
+    { name: 'Apr', income: 2000, expenses: 1550, savings: 450 },
+    { name: 'Mag', income: 2000, expenses: 1500, savings: 500 },
+    { name: 'Giu', income: 2100, expenses: 1550, savings: 550 },
+  ];
+  
+  const savingsProjection = [
+    { month: 'Lug', pessimistic: 3000, expected: 3300, optimistic: 3600 },
+    { month: 'Ago', pessimistic: 3250, expected: 3600, optimistic: 4000 },
+    { month: 'Set', pessimistic: 3500, expected: 3900, optimistic: 4400 },
+    { month: 'Ott', pessimistic: 3750, expected: 4200, optimistic: 4800 },
+    { month: 'Nov', pessimistic: 4000, expected: 4500, optimistic: 5200 },
+    { month: 'Dic', pessimistic: 4250, expected: 4800, optimistic: 5600 },
+  ];
+  
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+      return;
+    }
+    
+    if (user) {
+      fetchProfileData();
+    }
+  }, [user, loading, navigate]);
+  
+  const fetchProfileData = async () => {
+    if (!user) return;
+    
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+        
+      if (error) {
+        throw error;
+      }
+      
+      setProfileData(data);
+    } catch (error) {
+      console.error('Error fetching profile:', error);
+      toast({
+        title: 'Error fetching profile',
+        description: 'There was a problem loading your profile data.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  const handleAddObjective = () => {
+    toast({
+      title: "Nuovo obiettivo",
+      description: "Funzionalità in arrivo nelle prossime versioni!",
+    });
+  };
+  
+  const handleViewTransactions = () => {
+    toast({
+      title: "Transazioni",
+      description: "Funzionalità in arrivo nelle prossime versioni!",
+    });
+  };
+  
+  const handleManageBudget = () => {
+    navigate('/features');
+  };
+
+  if (loading || isLoading) {
+    return (
+      <Layout>
+        <div className="flex justify-center items-center h-[60vh]">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-remida-teal"></div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
@@ -57,7 +155,7 @@ const Dashboard = () => {
         <div className="container-custom">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
             <div>
-              <h1 className="text-3xl md:text-4xl font-bold mb-2">Benvenuto alla tua Dashboard</h1>
+              <h1 className="text-3xl md:text-4xl font-bold mb-2">Benvenuto {profileData?.full_name || profileData?.username || 'alla tua Dashboard'}</h1>
               <p className="text-lg">La tua panoramica finanziaria completa</p>
             </div>
             <div className="mt-4 md:mt-0 flex flex-col items-center">
@@ -97,7 +195,10 @@ const Dashboard = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold text-remida-teal">€{savings}</div>
-                    <p className="text-sm text-gray-600">+€250 rispetto al mese scorso</p>
+                    <div className="flex items-center text-sm text-green-600">
+                      <ArrowUpRight className="h-4 w-4 mr-1" /> 
+                      <span>+€250 (10%) rispetto al mese scorso</span>
+                    </div>
                   </CardContent>
                   <CardFooter className="pt-0">
                     <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">+10%</Badge>
@@ -113,7 +214,10 @@ const Dashboard = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold text-remida-teal">€{investments}</div>
-                    <p className="text-sm text-gray-600">+€100 rispetto al mese scorso</p>
+                    <div className="flex items-center text-sm text-green-600">
+                      <ArrowUpRight className="h-4 w-4 mr-1" /> 
+                      <span>+€100 (7%) rispetto al mese scorso</span>
+                    </div>
                   </CardContent>
                   <CardFooter className="pt-0">
                     <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">+7%</Badge>
@@ -137,6 +241,64 @@ const Dashboard = () => {
                       Come guadagnare punti <ArrowRight className="ml-1 h-4 w-4" />
                     </Button>
                   </CardFooter>
+                </Card>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                {/* Monthly Trends Chart */}
+                <Card className="md:col-span-1">
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <BarChart3 className="mr-2 h-5 w-5" /> Trends Mensili
+                    </CardTitle>
+                    <CardDescription>Andamento finanziario degli ultimi 6 mesi</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-64">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart
+                          data={monthlyData}
+                          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                        >
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="name" />
+                          <YAxis />
+                          <Tooltip />
+                          <Line type="monotone" dataKey="income" stroke="#8884d8" activeDot={{ r: 8 }} name="Entrate" />
+                          <Line type="monotone" dataKey="expenses" stroke="#ff7300" name="Uscite" />
+                          <Line type="monotone" dataKey="savings" stroke="#82ca9d" name="Risparmi" />
+                        </LineChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                {/* Future Projections Chart */}
+                <Card className="md:col-span-1">
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <TrendingUp className="mr-2 h-5 w-5" /> Proiezione Risparmi
+                    </CardTitle>
+                    <CardDescription>Stima dei risparmi per i prossimi 6 mesi</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-64">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart
+                          data={savingsProjection}
+                          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                        >
+                          <CartesianGrid strokeDasharray="3 3" />
+                          <XAxis dataKey="month" />
+                          <YAxis />
+                          <Tooltip />
+                          <Bar dataKey="pessimistic" fill="#ff7300" name="Pessimistica" />
+                          <Bar dataKey="expected" fill="#82ca9d" name="Attesa" />
+                          <Bar dataKey="optimistic" fill="#8884d8" name="Ottimistica" />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </CardContent>
                 </Card>
               </div>
               
@@ -179,7 +341,7 @@ const Dashboard = () => {
                         <div className="text-xs text-gray-500">3 giorni fa</div>
                       </div>
                     </div>
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between items-center pb-2 border-b">
                       <div className="flex items-center">
                         <CreditCard className="h-4 w-4 mr-2 text-gray-500" />
                         <span>Benzina</span>
@@ -191,7 +353,12 @@ const Dashboard = () => {
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <Button variant="outline" size="sm" className="w-full">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full"
+                      onClick={handleViewTransactions}
+                    >
                       Vedi Tutte le Transazioni
                     </Button>
                   </CardFooter>
@@ -235,7 +402,12 @@ const Dashboard = () => {
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <Button variant="outline" size="sm" className="w-full">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full"
+                      onClick={handleManageBudget}
+                    >
                       Gestisci Budget
                     </Button>
                   </CardFooter>
@@ -304,7 +476,12 @@ const Dashboard = () => {
                   </Card>
                 ))}
                 
-                <Card className="border-dashed border-2 flex flex-col justify-center items-center p-6">
+                <Card 
+                  className="border-dashed border-2 flex flex-col justify-center items-center p-6"
+                  onClick={handleAddObjective}
+                  role="button"
+                  tabIndex={0}
+                >
                   <div className="rounded-full bg-gray-100 p-3 mb-4">
                     <Target className="h-6 w-6 text-gray-400" />
                   </div>

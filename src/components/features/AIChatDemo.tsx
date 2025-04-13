@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SendHorizontal, Loader2, User, Bot, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,6 +32,7 @@ const AIChatDemo = () => {
     'Conviene comprare o affittare casa?',
     'Come creare un fondo di emergenza?'
   ]);
+  const [demoDone, setDemoDone] = useState(false);
 
   // Funzione per determinare la categoria della domanda
   const categorizeQuestion = (question: string): QuestionCategory => {
@@ -90,6 +90,85 @@ const AIChatDemo = () => {
         return "Per prendere decisioni finanziarie informate, considera sempre il tuo quadro finanziario completo: reddito, spese fisse, risparmi e obiettivi a lungo termine. Ti consiglio di tenere un fondo di emergenza pari a 3-6 mesi di spese e di rivedere regolarmente il tuo budget. Posso aiutarti con una domanda più specifica?";
     }
   };
+
+  // Demo messages that will play automatically
+  const demoMessages = [
+    {
+      type: 'user',
+      content: 'Come posso risparmiare per comprare casa?'
+    },
+    {
+      type: 'ai',
+      content: "Per risparmiare per l'acquisto di una casa, ti suggerisco di: 1) Aprire un conto deposito dedicato con il miglior tasso d'interesse disponibile. 2) Automatizzare un trasferimento mensile di almeno il 20% del tuo reddito. 3) Ridurre le spese superflue analizzando il tuo budget. 4) Considerare il Fondo prima casa o agevolazioni fiscali per i giovani. Con uno stipendio di €2.000, risparmiando €400 al mese, in 5 anni potresti accumulare circa €24.000, sufficienti per l'anticipo di un mutuo."
+    },
+    {
+      type: 'user',
+      content: 'Quanto dovrei risparmiare ogni mese?'
+    },
+    {
+      type: 'ai',
+      content: "Idealmente, dovresti risparmiare il 20-30% del tuo reddito mensile. Con uno stipendio di €2.000, significa mettere da parte €400-600 al mese. Inizia prima con un fondo di emergenza di 3-6 mesi di spese (€6.000-12.000), poi diversifica i tuoi risparmi tra obiettivi a breve termine (vacanze, acquisti importanti) e lungo termine (casa, pensione). Ricorda che anche piccoli risparmi costanti fanno una grande differenza nel tempo grazie all'interesse composto."
+    },
+    {
+      type: 'user',
+      content: 'Quali investimenti consigli per un principiante?'
+    },
+    {
+      type: 'ai',
+      content: "Per un principiante, consiglio di iniziare con ETF (fondi quotati) diversificati a basso costo che seguono indici come l'S&P 500 o MSCI World. Investi regolarmente piccole somme (es. €100-200/mese) sfruttando il dollar-cost averaging. Evita di concentrarti su singole azioni finché non hai più esperienza. Valuta anche conti deposito per la liquidità a breve termine e fondi pensione per i vantaggi fiscali. Ricorda: diversifica, mantieni basse le commissioni e investi con un orizzonte di almeno 5-10 anni."
+    },
+  ];
+
+  // Auto-play the demo chat
+  useEffect(() => {
+    if (!demoDone) {
+      const runDemoChat = async () => {
+        for (const message of demoMessages) {
+          if (message.type === 'user') {
+            // Add user message
+            setQuestion(message.content);
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            const userMessage: ChatMessage = {
+              id: `user-${Date.now()}`,
+              role: 'user',
+              content: message.content,
+              timestamp: new Date()
+            };
+            
+            setChatHistory(prev => [...prev, userMessage]);
+            setQuestion('');
+            setIsLoading(true);
+            
+            // Simulate typing delay before AI response
+            await new Promise(resolve => setTimeout(resolve, 1500));
+          } else {
+            // Add AI message
+            const aiMessage: ChatMessage = {
+              id: `ai-${Date.now()}`,
+              role: 'ai',
+              content: message.content,
+              timestamp: new Date()
+            };
+            
+            setChatHistory(prev => [...prev, aiMessage]);
+            setIsLoading(false);
+            
+            // Wait before next message
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        }
+        setDemoDone(true);
+      };
+      
+      // Start the demo chat after a short delay
+      const timer = setTimeout(() => {
+        runDemoChat();
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [demoDone]);
 
   // Gestione dell'invio della domanda
   const handleSubmit = (e: React.FormEvent) => {
@@ -191,10 +270,11 @@ const AIChatDemo = () => {
   // Gestione dell'uso di una domanda suggerita
   const handleSuggestedQuestion = (q: string) => {
     setQuestion(q);
-    // Opzionale: invia automaticamente la domanda
-    // setTimeout(() => {
-    //   handleSubmit(new Event('submit') as unknown as React.FormEvent);
-    // }, 100);
+    // Optional: submit the question automatically
+    setTimeout(() => {
+      const event = new Event('submit') as unknown as React.FormEvent;
+      handleSubmit(event);
+    }, 100);
   };
 
   return (
