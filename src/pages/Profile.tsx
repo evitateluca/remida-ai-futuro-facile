@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -21,7 +20,7 @@ interface ProfileData {
 }
 
 const Profile = () => {
-  const { user, loading, logout } = useAuth();
+  const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -103,7 +102,6 @@ const Profile = () => {
         description: 'Your profile has been successfully updated.',
       });
       
-      // Refresh profile data
       fetchProfileData();
     } catch (error) {
       console.error('Error updating profile:', error);
@@ -119,7 +117,7 @@ const Profile = () => {
   
   const handleLogout = async () => {
     try {
-      await logout();
+      await signOut();
       navigate('/auth');
     } catch (error) {
       console.error('Error logging out:', error);
@@ -147,7 +145,6 @@ const Profile = () => {
         <h1 className="text-3xl font-bold mb-8">Il Tuo Profilo</h1>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Sidebar with user information */}
           <div className="md:col-span-1">
             <Card>
               <CardHeader>
@@ -188,7 +185,6 @@ const Profile = () => {
             </Card>
           </div>
           
-          {/* Main content */}
           <div className="md:col-span-2">
             <Tabs defaultValue="account">
               <TabsList className="grid grid-cols-3 mb-8">
