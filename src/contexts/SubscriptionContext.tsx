@@ -21,7 +21,7 @@ interface SubscriptionContextType {
   refetchSubscription: () => Promise<void>;
 }
 
-const SubscriptionContext = createContext<SubscriptionType | undefined>(undefined);
+const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
 
 export function SubscriptionProvider({ children }: { children: React.ReactNode }) {
   const [subscription, setSubscription] = useState<Subscription | null>(null);
