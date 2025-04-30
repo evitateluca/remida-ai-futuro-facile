@@ -19,6 +19,9 @@ import {
   Calendar,
   ArrowUpRight,
   ArrowDownRight,
+  MessageCircle,
+  BitcoinIcon,
+  CircleDollarSign,
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -26,41 +29,92 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Slider } from '@/components/ui/slider';
 
 const Dashboard = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
   const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [chatMessages, setChatMessages] = useState([
+    { role: 'assistant', content: 'Ciao! Sono il tuo assistente ReMida AI. Come posso aiutarti con le tue finanze oggi?' }
+  ]);
+  const [newMessage, setNewMessage] = useState('');
+  const [selectedGoal, setSelectedGoal] = useState(null);
+  const [newGoalName, setNewGoalName] = useState('');
+  const [newGoalAmount, setNewGoalAmount] = useState('');
+  const [newGoalTimeframe, setNewGoalAmount] = useState('');
   
   // Stato per tenere traccia dei livelli e punti utente
   const [userLevel, setUserLevel] = useState(2);
   const [userPoints, setUserPoints] = useState(120);
   const [nextLevelPoints, setNextLevelPoints] = useState(200);
   
-  // Dati finanziari simulati
-  const savings = 2750;
-  const investments = 1500;
-  const expenses = [
-    { category: 'Casa', amount: 800, percentage: 40 },
-    { category: 'Trasporti', amount: 250, percentage: 12.5 },
-    { category: 'Alimentazione', amount: 350, percentage: 17.5 },
-    { category: 'Svago', amount: 200, percentage: 10 },
-    { category: 'Altro', amount: 400, percentage: 20 },
+  // Dati del portafoglio simulato
+  const portfolioData = [
+    { name: 'Bitcoin (BTC)', value: 2500, percentage: 25, color: '#FF9500' },
+    { name: 'Ethereum (ETH)', value: 1800, percentage: 18, color: '#627EEA' },
+    { name: 'USD Coin (USDC)', value: 3000, percentage: 30, color: '#2775CA' },
+    { name: 'Tether (USDT)', value: 1200, percentage: 12, color: '#26A17B' },
+    { name: 'Conto Corrente', value: 1500, percentage: 15, color: '#00C389' }
   ];
+
+  // Money Dials - categorie di spesa
+  const moneyDials = [
+    { category: 'Cibo & Bevande', amount: 450, importance: 7, color: '#FF6B6B' },
+    { category: 'Alloggio', amount: 800, importance: 9, color: '#4ECDC4' },
+    { category: 'Trasporto', amount: 250, importance: 5, color: '#FF9F1C' },
+    { category: 'Intrattenimento', amount: 200, importance: 6, color: '#A882DD' },
+    { category: 'Crypto Trading', amount: 300, importance: 8, color: '#E4B363' },
+    { category: 'Risparmio', amount: 300, importance: 7, color: '#1A936F' }
+  ];
+  
+  // Dati obiettivi
   const objectives = [
-    { name: 'Fondo Emergenza', current: 1500, target: 3000, percentage: 50 },
-    { name: 'Vacanza Estate', current: 600, target: 1200, percentage: 50 },
-    { name: 'Nuovo Computer', current: 400, target: 1000, percentage: 40 },
+    { 
+      id: 1,
+      name: 'Fondo Emergenza', 
+      current: 1500, 
+      target: 3000, 
+      percentage: 50,
+      timeframe: '6 mesi',
+      strategy: 'USDT in staking (5%)',
+      monthlyContribution: 250
+    },
+    { 
+      id: 2,
+      name: 'Viaggio a Tokyo', 
+      current: 600, 
+      target: 1200, 
+      percentage: 50,
+      timeframe: '1 anno',
+      strategy: 'DCA in BTC + USDC',
+      monthlyContribution: 50
+    },
+    { 
+      id: 3,
+      name: 'Gaming PC', 
+      current: 400, 
+      target: 1000, 
+      percentage: 40,
+      timeframe: '3 mesi',
+      strategy: 'Risparmio su conto',
+      monthlyContribution: 200
+    },
   ];
-  const achievements = [
-    { name: 'Risparmiatore Alle Prime Armi', icon: <Star className="h-5 w-5" />, unlocked: true },
-    { name: 'Budget Master', icon: <Wallet className="h-5 w-5" />, unlocked: true },
-    { name: 'Pianificatore', icon: <Calendar className="h-5 w-5" />, unlocked: false },
-    { name: 'Investitore', icon: <TrendingUp className="h-5 w-5" />, unlocked: false },
-    { name: 'Obiettivo Completato', icon: <Target className="h-5 w-5" />, unlocked: false },
-  ];
+  
+  // AI chat responses
+  const aiResponses = {
+    "ciao": "Ciao! Come posso aiutarti con le tue finanze oggi?",
+    "come funziona": "ReMida AI ti aiuta a gestire il tuo patrimonio crypto e tradizionale, pianificare obiettivi finanziari e migliorare le tue abitudini di spesa. Cosa ti interessa approfondire?",
+    "cosa sono le stablecoin": "Le stablecoin sono criptovalute ancorate al valore di un'altra attività, come il dollaro USA. Tether (USDT) e USD Coin (USDC) sono esempi popolari. Sono utili per mantenere stabilità nel tuo portafoglio crypto e possono essere usate per il risparmio con tassi di interesse interessanti.",
+    "come risparmio per un viaggio": "Per risparmiare per un viaggio, potresti: 1) Creare un obiettivo dedicato con una timeline precisa, 2) Utilizzare stablecoin come USDT con programmi di staking per guadagnare interessi durante il risparmio, 3) Impostare trasferimenti automatici mensili, 4) Usare una app di budget per ridurre spese non necessarie e accelerare il risparmio.",
+    "posso comprare bitcoin": "Puoi comprare Bitcoin attraverso exchange come Binance, Coinbase o Crypto.com. Ti consiglio di iniziare con piccole somme e considerare una strategia DCA (Dollar-Cost Averaging) piuttosto che investire tutto in una volta. Ricorda: investi solo ciò che sei disposto a perdere e diversifica il tuo portafoglio.",
+    "come iniziare con le crypto": "Per iniziare con le crypto: 1) Educati sui concetti base (blockchain, wallet, exchange), 2) Scegli un exchange affidabile e crea un account, 3) Imposta un budget che puoi permetterti di rischiare, 4) Inizia con Bitcoin ed Ethereum per imparare, 5) Valuta di usare stablecoin come USDT per la parte più conservativa, 6) Tieni traccia dei tuoi investimenti qui su ReMida AI."
+  };
   
   // Dati per i grafici
   const monthlyData = [
@@ -120,10 +174,38 @@ const Dashboard = () => {
     }
   };
   
+  const handleSendMessage = () => {
+    if (!newMessage.trim()) return;
+    
+    // Add user message to chat
+    setChatMessages([...chatMessages, { role: 'user', content: newMessage }]);
+    
+    // Generate AI response
+    setTimeout(() => {
+      let response = "Non ho una risposta specifica per questa domanda. Puoi provare a chiedere qualcosa sulle crypto, risparmio o pianificazione finanziaria?";
+      
+      // Check for predefined responses
+      const lowercaseMsg = newMessage.toLowerCase();
+      Object.keys(aiResponses).forEach(key => {
+        if (lowercaseMsg.includes(key)) {
+          response = aiResponses[key];
+        }
+      });
+      
+      setChatMessages(prev => [...prev, { role: 'assistant', content: response }]);
+    }, 1000);
+    
+    setNewMessage('');
+  };
+  
+  const handleViewGoalDetails = (goal) => {
+    setSelectedGoal(goal);
+  };
+
   const handleAddObjective = () => {
     toast({
-      title: "Nuovo obiettivo",
-      description: "Funzionalità in arrivo nelle prossime versioni!",
+      title: "Funzionalità in arrivo",
+      description: "La creazione di nuovi obiettivi sarà disponibile a breve!",
     });
   };
   
@@ -134,8 +216,11 @@ const Dashboard = () => {
     });
   };
   
-  const handleManageBudget = () => {
-    navigate('/features');
+  const handleConnectWallet = () => {
+    toast({
+      title: "Collegamento Wallet",
+      description: "La funzionalità di collegamento wallet sarà disponibile a breve!",
+    });
   };
 
   if (loading || isLoading) {
@@ -178,67 +263,79 @@ const Dashboard = () => {
           <Tabs defaultValue="overview" className="w-full">
             <TabsList className="grid grid-cols-4 mb-8">
               <TabsTrigger value="overview">Panoramica</TabsTrigger>
-              <TabsTrigger value="expenses">Spese</TabsTrigger>
-              <TabsTrigger value="objectives">Obiettivi</TabsTrigger>
-              <TabsTrigger value="achievements">Traguardi</TabsTrigger>
+              <TabsTrigger value="portfolio">Patrimonio</TabsTrigger>
+              <TabsTrigger value="planning">Pianificazione</TabsTrigger>
+              <TabsTrigger value="chatai">Chat AI</TabsTrigger>
             </TabsList>
             
             {/* Overview Tab */}
             <TabsContent value="overview">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                {/* Savings Card */}
+                {/* Total Portfolio */}
                 <Card>
                   <CardHeader className="pb-2">
                     <CardTitle className="text-lg font-semibold flex items-center">
-                      <PiggyBank className="mr-2 h-5 w-5 text-remida-teal" /> Risparmi Totali
+                      <Wallet className="mr-2 h-5 w-5 text-remida-teal" /> Patrimonio Totale
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-remida-teal">€{savings}</div>
+                    <div className="text-2xl font-bold text-remida-teal">€10.000</div>
                     <div className="flex items-center text-sm text-green-600">
                       <ArrowUpRight className="h-4 w-4 mr-1" /> 
-                      <span>+€250 (10%) rispetto al mese scorso</span>
+                      <span>+€500 (5%) rispetto al mese scorso</span>
                     </div>
                   </CardContent>
                   <CardFooter className="pt-0">
-                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">+10%</Badge>
+                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">+5%</Badge>
                   </CardFooter>
                 </Card>
                 
-                {/* Investments Card */}
+                {/* Crypto Portfolio */}
                 <Card>
                   <CardHeader className="pb-2">
                     <CardTitle className="text-lg font-semibold flex items-center">
-                      <TrendingUp className="mr-2 h-5 w-5 text-remida-teal" /> Investimenti
+                      <BitcoinIcon className="mr-2 h-5 w-5 text-remida-teal" /> Portafoglio Crypto
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-remida-teal">€{investments}</div>
+                    <div className="text-2xl font-bold text-remida-teal">€8.500</div>
                     <div className="flex items-center text-sm text-green-600">
                       <ArrowUpRight className="h-4 w-4 mr-1" /> 
-                      <span>+€100 (7%) rispetto al mese scorso</span>
+                      <span>+€600 (7.5%) rispetto al mese scorso</span>
                     </div>
                   </CardContent>
                   <CardFooter className="pt-0">
-                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">+7%</Badge>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="text-remida-teal"
+                      onClick={handleConnectWallet}
+                    >
+                      Collega Wallet <ArrowRight className="ml-1 h-4 w-4" />
+                    </Button>
                   </CardFooter>
                 </Card>
                 
-                {/* Next Level Card */}
+                {/* Objectives Progress */}
                 <Card>
                   <CardHeader className="pb-2">
                     <CardTitle className="text-lg font-semibold flex items-center">
-                      <Award className="mr-2 h-5 w-5 text-remida-orange" /> Prossimo Livello
+                      <Target className="mr-2 h-5 w-5 text-remida-orange" /> Obiettivi
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-remida-orange">Livello {userLevel + 1}</div>
-                    <p className="text-sm text-gray-600">Mancano {nextLevelPoints - userPoints} punti</p>
-                    <Progress value={(userPoints/nextLevelPoints)*100} className="h-2 mt-2" />
+                    <div className="text-2xl font-bold text-remida-orange">3 Attivi</div>
+                    <p className="text-sm text-gray-600">50% completati in media</p>
+                    <Progress value={50} className="h-2 mt-2" />
                   </CardContent>
                   <CardFooter className="pt-0">
-                    <Button variant="link" size="sm" className="text-remida-orange p-0">
-                      Come guadagnare punti <ArrowRight className="ml-1 h-4 w-4" />
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="text-remida-orange"
+                      onClick={() => document.querySelector('button[value="planning"]')?.click()}
+                    >
+                      Gestisci Obiettivi <ArrowRight className="ml-1 h-4 w-4" />
                     </Button>
                   </CardFooter>
                 </Card>
@@ -273,260 +370,458 @@ const Dashboard = () => {
                   </CardContent>
                 </Card>
                 
-                {/* Future Projections Chart */}
+                {/* Money Dials Chart */}
                 <Card className="md:col-span-1">
                   <CardHeader>
                     <CardTitle className="flex items-center">
-                      <TrendingUp className="mr-2 h-5 w-5" /> Proiezione Risparmi
+                      <CircleDollarSign className="mr-2 h-5 w-5" /> Money Dials
                     </CardTitle>
-                    <CardDescription>Stima dei risparmi per i prossimi 6 mesi</CardDescription>
+                    <CardDescription>Dove destini i tuoi soldi</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="h-64">
+                    <div className="h-64 flex items-center justify-center">
                       <ResponsiveContainer width="100%" height="100%">
-                        <BarChart
-                          data={savingsProjection}
-                          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                        >
-                          <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="month" />
-                          <YAxis />
-                          <Tooltip />
-                          <Bar dataKey="pessimistic" fill="#ff7300" name="Pessimistica" />
-                          <Bar dataKey="expected" fill="#82ca9d" name="Attesa" />
-                          <Bar dataKey="optimistic" fill="#8884d8" name="Ottimistica" />
-                        </BarChart>
+                        <PieChart>
+                          <Pie
+                            data={moneyDials}
+                            cx="50%"
+                            cy="50%"
+                            labelLine={false}
+                            outerRadius={80}
+                            fill="#8884d8"
+                            dataKey="amount"
+                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                          >
+                            {moneyDials.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
+                          </Pie>
+                          <Tooltip formatter={(value) => `€${value}`} />
+                        </PieChart>
                       </ResponsiveContainer>
                     </div>
                   </CardContent>
                 </Card>
               </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Recent Activity */}
-                <Card className="md:col-span-1">
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <Clock className="mr-2 h-5 w-5" /> Attività Recente
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="flex justify-between items-center pb-2 border-b">
-                      <div className="flex items-center">
-                        <CreditCard className="h-4 w-4 mr-2 text-gray-500" />
-                        <span>Supermercato</span>
+            </TabsContent>
+            
+            {/* Portfolio Tab */}
+            <TabsContent value="portfolio">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="md:col-span-1">
+                  <Card className="h-full">
+                    <CardHeader>
+                      <CardTitle>Il Tuo Portafoglio</CardTitle>
+                      <CardDescription>Distribuzione degli asset</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="h-64 flex items-center justify-center">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie
+                              data={portfolioData}
+                              cx="50%"
+                              cy="50%"
+                              labelLine={false}
+                              outerRadius={80}
+                              fill="#8884d8"
+                              dataKey="value"
+                              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                            >
+                              {portfolioData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={entry.color} />
+                              ))}
+                            </Pie>
+                            <Tooltip formatter={(value) => `€${value}`} />
+                          </PieChart>
+                        </ResponsiveContainer>
                       </div>
-                      <div className="text-right">
-                        <div className="font-medium">-€45,60</div>
-                        <div className="text-xs text-gray-500">Oggi</div>
-                      </div>
-                    </div>
-                    <div className="flex justify-between items-center pb-2 border-b">
-                      <div className="flex items-center">
-                        <Landmark className="h-4 w-4 mr-2 text-gray-500" />
-                        <span>Stipendio</span>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-medium text-green-600">+€1.850,00</div>
-                        <div className="text-xs text-gray-500">2 giorni fa</div>
-                      </div>
-                    </div>
-                    <div className="flex justify-between items-center pb-2 border-b">
-                      <div className="flex items-center">
-                        <CreditCard className="h-4 w-4 mr-2 text-gray-500" />
-                        <span>Ristorante</span>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-medium">-€32,50</div>
-                        <div className="text-xs text-gray-500">3 giorni fa</div>
-                      </div>
-                    </div>
-                    <div className="flex justify-between items-center pb-2 border-b">
-                      <div className="flex items-center">
-                        <CreditCard className="h-4 w-4 mr-2 text-gray-500" />
-                        <span>Benzina</span>
-                      </div>
-                      <div className="text-right">
-                        <div className="font-medium">-€50,00</div>
-                        <div className="text-xs text-gray-500">5 giorni fa</div>
-                      </div>
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="w-full"
-                      onClick={handleViewTransactions}
-                    >
-                      Vedi Tutte le Transazioni
-                    </Button>
-                  </CardFooter>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </div>
                 
-                {/* Monthly Overview */}
-                <Card className="md:col-span-1">
-                  <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <BarChart3 className="mr-2 h-5 w-5" /> Panoramica Mensile
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div>
-                      <div className="flex justify-between mb-1">
-                        <span className="text-sm font-medium">Reddito</span>
-                        <span className="text-sm font-medium text-green-600">€2.000,00</span>
+                <div className="md:col-span-2">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Dettaglio Asset</CardTitle>
+                      <CardDescription>Valori e percentuali</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {portfolioData.map((asset, index) => (
+                          <div key={index}>
+                            <div className="flex justify-between mb-1">
+                              <span className="text-sm font-medium">{asset.name}</span>
+                              <span className="text-sm font-medium">€{asset.value}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Progress value={asset.percentage} className="h-2" 
+                                style={{color: asset.color}} />
+                              <span className="text-xs text-gray-500">{asset.percentage}%</span>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                      <Progress value={100} className="h-2" />
-                    </div>
-                    <div>
-                      <div className="flex justify-between mb-1">
-                        <span className="text-sm font-medium">Spese</span>
-                        <span className="text-sm font-medium">€1.500,00</span>
+                      
+                      <div className="mt-8">
+                        <Button 
+                          onClick={handleConnectWallet} 
+                          className="bg-remida-teal hover:bg-remida-teal/90 w-full"
+                        >
+                          <Wallet className="mr-2 h-4 w-4" />
+                          Collega il tuo Wallet
+                        </Button>
+                        
+                        <div className="mt-4 text-sm text-center text-gray-500">
+                          <p>ReMida AI supporta i principali wallet crypto e può collegarsi anche ai tuoi conti bancari per una visione completa del tuo patrimonio.</p>
+                        </div>
                       </div>
-                      <Progress value={75} className="h-2 bg-gray-200 [&>div]:bg-amber-500" />
-                    </div>
-                    <div>
-                      <div className="flex justify-between mb-1">
-                        <span className="text-sm font-medium">Risparmi</span>
-                        <span className="text-sm font-medium text-green-600">€500,00</span>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card className="mt-6">
+                    <CardHeader>
+                      <CardTitle>Money Dials</CardTitle>
+                      <CardDescription>Su cosa spendi i tuoi soldi</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      {moneyDials.map((category, index) => (
+                        <div key={index} className="mb-4">
+                          <div className="flex justify-between items-center mb-2">
+                            <div>
+                              <span className="font-medium">{category.category}</span>
+                              <p className="text-sm text-gray-500">€{category.amount}/mese</p>
+                            </div>
+                            <div className="text-right">
+                              <span className="text-sm">Importanza: {category.importance}/10</span>
+                            </div>
+                          </div>
+                          <Slider
+                            defaultValue={[category.importance * 10]}
+                            max={100}
+                            step={10}
+                            disabled
+                          />
+                        </div>
+                      ))}
+                      
+                      <div className="mt-4 text-sm text-center text-gray-500">
+                        <p>I "Money Dials" ti mostrano dove dirigi i tuoi soldi in base alle tue priorità. Aumenta la spesa in ciò che ti dà più felicità e riduci il resto.</p>
                       </div>
-                      <Progress value={25} className="h-2" />
-                    </div>
-                    <div className="pt-4 border-t mt-4">
-                      <div className="flex justify-between items-center">
-                        <span className="font-medium">Budget Rimanente</span>
-                        <span className="font-bold text-remida-teal">€500,00</span>
-                      </div>
-                      <p className="text-sm text-gray-500 mt-1">25% del tuo reddito mensile</p>
-                    </div>
-                  </CardContent>
-                  <CardFooter>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="w-full"
-                      onClick={handleManageBudget}
-                    >
-                      Gestisci Budget
-                    </Button>
-                  </CardFooter>
-                </Card>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
             </TabsContent>
             
-            {/* Expenses Tab */}
-            <TabsContent value="expenses">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Le Tue Spese Mensili</CardTitle>
-                  <CardDescription>Suddivisione delle tue spese per categoria</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {expenses.map((expense, index) => (
-                      <div key={index}>
-                        <div className="flex justify-between mb-1">
-                          <span className="text-sm font-medium">{expense.category}</span>
-                          <span className="text-sm font-medium">€{expense.amount}</span>
+            {/* Planning Tab */}
+            <TabsContent value="planning">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="md:col-span-1">
+                  {selectedGoal ? (
+                    <Card>
+                      <CardHeader>
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <CardTitle>{selectedGoal.name}</CardTitle>
+                            <CardDescription>Dettaglio obiettivo</CardDescription>
+                          </div>
+                          <Button 
+                            variant="ghost" 
+                            size="sm"
+                            onClick={() => setSelectedGoal(null)}
+                          >
+                            Torna alla lista
+                          </Button>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Progress value={expense.percentage} className="h-2" />
-                          <span className="text-xs text-gray-500">{expense.percentage}%</span>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        <div>
+                          <h4 className="font-medium text-sm mb-1">Progresso</h4>
+                          <Progress value={selectedGoal.percentage} className="h-2" />
+                          <div className="flex justify-between mt-1 text-sm">
+                            <span>€{selectedGoal.current}</span>
+                            <span>{selectedGoal.percentage}%</span>
+                            <span>€{selectedGoal.target}</span>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-6 pt-4 border-t">
-                    <div className="flex justify-between items-center">
-                      <span className="font-medium">Totale Spese</span>
-                      <span className="font-bold">€2.000,00</span>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <Button className="bg-remida-teal hover:bg-remida-teal/90 w-full">
-                    Analisi Dettagliata
-                  </Button>
-                </CardFooter>
-              </Card>
-            </TabsContent>
-            
-            {/* Objectives Tab */}
-            <TabsContent value="objectives">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {objectives.map((objective, index) => (
-                  <Card key={index}>
+                        
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <h4 className="font-medium text-sm mb-1">Timeframe</h4>
+                            <p>{selectedGoal.timeframe}</p>
+                          </div>
+                          <div>
+                            <h4 className="font-medium text-sm mb-1">Contributo Mensile</h4>
+                            <p>€{selectedGoal.monthlyContribution}/mese</p>
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <h4 className="font-medium text-sm mb-1">Strategia</h4>
+                          <p>{selectedGoal.strategy}</p>
+                        </div>
+                        
+                        <div className="pt-4 border-t">
+                          <h4 className="font-medium text-sm mb-3">Simulazione</h4>
+                          <div className="h-40">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <LineChart
+                                data={savingsProjection}
+                                margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
+                              >
+                                <XAxis dataKey="month" />
+                                <YAxis />
+                                <Tooltip />
+                                <Line type="monotone" dataKey="expected" stroke="#82ca9d" name="Atteso" />
+                                <Line type="monotone" dataKey="optimistic" stroke="#8884d8" name="Ottimistico" />
+                                <Line type="monotone" dataKey="pessimistic" stroke="#ff7300" name="Pessimistico" />
+                              </LineChart>
+                            </ResponsiveContainer>
+                          </div>
+                        </div>
+                      </CardContent>
+                      <CardFooter>
+                        <Button 
+                          className="bg-remida-teal hover:bg-remida-teal/90 w-full"
+                        >
+                          Aggiungi Fondi
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  ) : (
+                    <Card className="h-full">
+                      <CardHeader>
+                        <CardTitle>I Tuoi Obiettivi</CardTitle>
+                        <CardDescription>Pianifica il tuo futuro</CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        {objectives.map((objective, index) => (
+                          <div 
+                            key={index} 
+                            className="p-4 border rounded-md cursor-pointer hover:bg-gray-50 transition-colors"
+                            onClick={() => handleViewGoalDetails(objective)}
+                          >
+                            <div className="flex justify-between items-start mb-2">
+                              <h3 className="font-medium">{objective.name}</h3>
+                              <Badge>{objective.timeframe}</Badge>
+                            </div>
+                            <Progress value={objective.percentage} className="h-2 mb-2" />
+                            <div className="flex justify-between text-sm">
+                              <span>€{objective.current} / €{objective.target}</span>
+                              <span>{objective.percentage}%</span>
+                            </div>
+                          </div>
+                        ))}
+                      </CardContent>
+                      <CardFooter>
+                        <Button 
+                          onClick={handleAddObjective}
+                          className="bg-remida-orange hover:bg-remida-orange/90 w-full"
+                        >
+                          + Nuovo Obiettivo
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  )}
+                </div>
+                
+                <div className="md:col-span-2">
+                  <Card>
                     <CardHeader>
-                      <CardTitle className="text-lg">{objective.name}</CardTitle>
-                      <CardDescription>
-                        €{objective.current} di €{objective.target}
-                      </CardDescription>
+                      <CardTitle>Simulatore di Pianificazione</CardTitle>
+                      <CardDescription>Calcola come raggiungere i tuoi obiettivi</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Progress value={objective.percentage} className="h-2" />
-                      <p className="text-sm text-gray-500 mt-2">{objective.percentage}% completato</p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div>
+                          <label className="block text-sm font-medium mb-2">Nome Obiettivo</label>
+                          <Input 
+                            placeholder="es. Fondo Emergenza" 
+                            value={newGoalName}
+                            onChange={e => setNewGoalName(e.target.value)}
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium mb-2">Importo Target</label>
+                          <Input 
+                            placeholder="es. 5000" 
+                            type="number" 
+                            value={newGoalAmount}
+                            onChange={e => setNewGoalAmount(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="mb-6">
+                        <label className="block text-sm font-medium mb-2">Timeframe</label>
+                        <div className="grid grid-cols-3 gap-2">
+                          <Button variant="outline">3 mesi</Button>
+                          <Button variant="outline">6 mesi</Button>
+                          <Button variant="outline">1 anno</Button>
+                          <Button variant="outline">2 anni</Button>
+                          <Button variant="outline">5 anni</Button>
+                          <Button variant="outline">Personalizzato</Button>
+                        </div>
+                      </div>
+                      
+                      <div className="mb-6">
+                        <label className="block text-sm font-medium mb-2">Strategia di Risparmio</label>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="border p-4 rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                            <div className="flex items-center mb-2">
+                              <Landmark className="h-5 w-5 mr-2 text-blue-500" />
+                              <h4 className="font-medium">Tradizionale</h4>
+                            </div>
+                            <p className="text-sm text-gray-500">Risparmio su conto corrente con un interesse dell'1%</p>
+                          </div>
+                          
+                          <div className="border border-remida-teal p-4 rounded-md cursor-pointer bg-remida-teal/5">
+                            <div className="flex items-center mb-2">
+                              <BitcoinIcon className="h-5 w-5 mr-2 text-orange-500" />
+                              <h4 className="font-medium">Crypto Mix</h4>
+                            </div>
+                            <p className="text-sm text-gray-500">70% USDT staking (5%) + 30% BTC/ETH</p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="mb-6 pt-4 border-t">
+                        <h3 className="text-lg font-medium mb-3">Risultati Simulazione</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                          <div className="p-4 bg-gray-50 rounded-md">
+                            <h4 className="text-sm font-medium mb-1">Contributo Mensile</h4>
+                            <p className="text-2xl font-bold text-remida-teal">€200</p>
+                          </div>
+                          <div className="p-4 bg-gray-50 rounded-md">
+                            <h4 className="text-sm font-medium mb-1">Rendimento Stimato</h4>
+                            <p className="text-2xl font-bold text-green-600">+€126</p>
+                          </div>
+                          <div className="p-4 bg-gray-50 rounded-md">
+                            <h4 className="text-sm font-medium mb-1">Totale Finale</h4>
+                            <p className="text-2xl font-bold">€2.526</p>
+                          </div>
+                        </div>
+                        
+                        <div className="h-64">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart
+                              data={[
+                                { month: "Contributi", amount: 2400 },
+                                { month: "Rendimenti", amount: 126 },
+                                { month: "Totale", amount: 2526 }
+                              ]}
+                              margin={{ top: 5, right: 20, left: 20, bottom: 5 }}
+                            >
+                              <CartesianGrid strokeDasharray="3 3" />
+                              <XAxis dataKey="month" />
+                              <YAxis />
+                              <Tooltip formatter={(value) => `€${value}`} />
+                              <Bar dataKey="amount" fill="#3b82f6" />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      </div>
                     </CardContent>
-                    <CardFooter className="flex justify-between">
-                      <Button variant="outline" size="sm">Modifica</Button>
-                      <Button size="sm" className="bg-remida-teal hover:bg-remida-teal/90">
-                        Aggiungi Fondi
+                    <CardFooter className="flex flex-col items-stretch">
+                      <Button 
+                        className="bg-remida-teal hover:bg-remida-teal/90 w-full"
+                      >
+                        Crea Questo Obiettivo
                       </Button>
+                      <p className="text-xs text-center mt-2 text-gray-500">
+                        La simulazione è solo a scopo indicativo. I rendimenti effettivi potrebbero variare.
+                      </p>
                     </CardFooter>
                   </Card>
-                ))}
-                
-                <Card 
-                  className="border-dashed border-2 flex flex-col justify-center items-center p-6"
-                  onClick={handleAddObjective}
-                  role="button"
-                  tabIndex={0}
-                >
-                  <div className="rounded-full bg-gray-100 p-3 mb-4">
-                    <Target className="h-6 w-6 text-gray-400" />
-                  </div>
-                  <h3 className="text-lg font-medium mb-2">Nuovo Obiettivo</h3>
-                  <p className="text-gray-500 text-center mb-4">
-                    Crea un nuovo obiettivo di risparmio per i tuoi progetti futuri
-                  </p>
-                  <Button variant="outline">Aggiungi Obiettivo</Button>
-                </Card>
+                </div>
               </div>
             </TabsContent>
             
-            {/* Achievements Tab */}
-            <TabsContent value="achievements">
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {achievements.map((achievement, index) => (
-                  <Card key={index} className={!achievement.unlocked ? "opacity-50" : ""}>
-                    <CardHeader className="pb-2">
-                      <div className="flex justify-between items-start">
-                        <div className={`rounded-full p-2 ${achievement.unlocked ? 'bg-remida-teal/20' : 'bg-gray-200'}`}>
-                          {achievement.icon}
-                        </div>
-                        {achievement.unlocked && (
-                          <Badge className="bg-remida-teal">Sbloccato</Badge>
-                        )}
-                      </div>
+            {/* Chat AI Tab */}
+            <TabsContent value="chatai">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="md:col-span-1">
+                  <Card className="h-full">
+                    <CardHeader>
+                      <CardTitle className="flex items-center">
+                        <MessageCircle className="mr-2 h-5 w-5" /> 
+                        Domande frequenti
+                      </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <h3 className="font-medium">{achievement.name}</h3>
-                      <p className="text-sm text-gray-500 mt-1">
-                        {achievement.unlocked 
-                          ? "Complimenti! Hai raggiunto questo traguardo." 
-                          : "Continua a usare l'app per sbloccare questo traguardo."}
-                      </p>
+                      <div className="space-y-2">
+                        {Object.keys(aiResponses).map((key, index) => (
+                          <Button 
+                            key={index} 
+                            variant="outline" 
+                            className="w-full justify-start text-left h-auto py-2"
+                            onClick={() => {
+                              setNewMessage(key);
+                              handleSendMessage();
+                            }}
+                          >
+                            {key.charAt(0).toUpperCase() + key.slice(1)}?
+                          </Button>
+                        ))}
+                      </div>
                     </CardContent>
+                    <CardFooter>
+                      <div className="text-sm text-gray-500">
+                        <p>Puoi chiedere informazioni su crypto, strategie di risparmio, obiettivi finanziari e molto altro!</p>
+                      </div>
+                    </CardFooter>
                   </Card>
-                ))}
-              </div>
-              
-              <div className="mt-8 text-center">
-                <p className="text-lg font-medium mb-2">Hai sbloccato 2 di 5 traguardi</p>
-                <Progress value={40} className="h-2 max-w-md mx-auto" />
-                <p className="text-sm text-gray-500 mt-2">
-                  Continua a pianificare le tue finanze per guadagnare più punti e sbloccare nuovi traguardi!
-                </p>
+                </div>
+                
+                <div className="md:col-span-2">
+                  <Card className="h-full flex flex-col">
+                    <CardHeader>
+                      <CardTitle>ReMida AI Chat</CardTitle>
+                      <CardDescription>Il tuo assistente finanziario personale</CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-grow overflow-y-auto max-h-[500px]">
+                      <div className="space-y-4">
+                        {chatMessages.map((message, index) => (
+                          <div 
+                            key={index} 
+                            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                          >
+                            <div 
+                              className={`max-w-[80%] p-3 rounded-lg ${
+                                message.role === 'user' 
+                                  ? 'bg-remida-teal text-white' 
+                                  : 'bg-gray-100 text-gray-800'
+                              }`}
+                            >
+                              {message.content}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                    <CardFooter className="border-t pt-4 mt-auto">
+                      <div className="flex w-full gap-2">
+                        <Input 
+                          placeholder="Scrivi un messaggio..." 
+                          value={newMessage}
+                          onChange={(e) => setNewMessage(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              handleSendMessage();
+                            }
+                          }}
+                        />
+                        <Button 
+                          className="bg-remida-teal hover:bg-remida-teal/90"
+                          onClick={handleSendMessage}
+                        >
+                          Invia
+                        </Button>
+                      </div>
+                    </CardFooter>
+                  </Card>
+                </div>
               </div>
             </TabsContent>
           </Tabs>

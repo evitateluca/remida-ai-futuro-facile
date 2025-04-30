@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Award, LogOut, User } from 'lucide-react';
+import { Menu, X, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -40,10 +40,6 @@ const Navbar = () => {
             </Link>
             <Link to="/features" className="text-gray-700 hover:text-remida-teal transition-colors">
               Funzionalità
-            </Link>
-            <Link to="/pricing" className="text-gray-700 hover:text-remida-teal transition-colors flex items-center">
-              <span>Prezzi</span>
-              <Award className="ml-1 h-4 w-4 text-remida-orange" />
             </Link>
             <Link to="/faq" className="text-gray-700 hover:text-remida-teal transition-colors">
               FAQ
@@ -120,14 +116,6 @@ const Navbar = () => {
                 onClick={toggleMobileMenu}
               >
                 Funzionalità
-              </Link>
-              <Link 
-                to="/pricing" 
-                className="text-gray-700 hover:text-remida-teal transition-colors py-2 flex items-center"
-                onClick={toggleMobileMenu}
-              >
-                <span>Prezzi</span>
-                <Award className="ml-1 h-4 w-4 text-remida-orange" />
               </Link>
               <Link 
                 to="/faq" 
