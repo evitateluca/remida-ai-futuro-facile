@@ -46,7 +46,7 @@ const Dashboard = () => {
   const [selectedGoal, setSelectedGoal] = useState(null);
   const [newGoalName, setNewGoalName] = useState('');
   const [newGoalAmount, setNewGoalAmount] = useState('');
-  const [newGoalTimeframe, setNewGoalAmount] = useState('');
+  const [newGoalTimeframe, setNewGoalTimeframe] = useState(''); // Fixed: renamed setter function
   
   // Stato per tenere traccia dei livelli e punti utente
   const [userLevel, setUserLevel] = useState(2);
@@ -333,7 +333,13 @@ const Dashboard = () => {
                       variant="outline" 
                       size="sm" 
                       className="text-remida-orange"
-                      onClick={() => document.querySelector('button[value="planning"]')?.click()}
+                      onClick={() => {
+                        // Fixed: Using query selector to find the planning tab and dispatch a click event properly
+                        const planningTab = document.querySelector('button[value="planning"]');
+                        if (planningTab) {
+                          (planningTab as HTMLButtonElement).click();
+                        }
+                      }}
                     >
                       Gestisci Obiettivi <ArrowRight className="ml-1 h-4 w-4" />
                     </Button>
