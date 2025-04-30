@@ -6,22 +6,31 @@ const LanguageSelector = () => {
   const { language, setLanguage } = useLanguage();
 
   return (
-    <div className="flex items-center space-x-2">
+    <div className="flex items-center space-x-1">
       <Button
         variant="ghost"
         size="sm"
-        className={`${language === 'it' ? 'bg-gray-100' : ''}`}
+        className={`px-2 py-1 text-sm transition-colors ${
+          language === 'it' 
+            ? 'text-remida-teal font-medium border-b-2 border-remida-teal' 
+            : 'text-gray-500 hover:text-remida-teal'
+        }`}
         onClick={() => setLanguage('it')}
       >
-        🇮🇹 IT
+        IT
       </Button>
+      <span className="text-gray-400">|</span>
       <Button
         variant="ghost"
         size="sm"
-        className={`${language === 'en' ? 'bg-gray-100' : ''}`}
+        className={`px-2 py-1 text-sm transition-colors ${
+          language === 'en' 
+            ? 'text-remida-teal font-medium border-b-2 border-remida-teal' 
+            : 'text-gray-500 hover:text-remida-teal'
+        }`}
         onClick={() => setLanguage('en')}
       >
-        🇬🇧 EN
+        EN
       </Button>
     </div>
   );
