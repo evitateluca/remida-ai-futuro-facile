@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import { useAuth } from '@/contexts/AuthContext';
@@ -22,7 +21,14 @@ import {
   MessageCircle,
   BitcoinIcon,
   CircleDollarSign,
+  Book,
+  Lightbulb,
+  TrendingDown,
+  Medal,
+  ChevronRight,
+  Bell
 } from 'lucide-react';
+import Shield from '@/components/icons/Shield';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -33,6 +39,11 @@ import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, R
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+// Import the new features components
+import EducationalPath from '@/components/features/EducationalPath';
+import FuturePlanning from '@/components/features/FuturePlanning';
 
 const Dashboard = () => {
   const { user, loading } = useAuth();
