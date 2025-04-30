@@ -6,32 +6,34 @@ const LanguageSelector = () => {
   const { language, setLanguage } = useLanguage();
 
   return (
-    <div className="flex items-center space-x-1">
-      <Button
-        variant="ghost"
-        size="sm"
-        className={`px-2 py-1 text-sm transition-colors ${
-          language === 'it' 
-            ? 'text-remida-teal font-medium border-b-2 border-remida-teal' 
-            : 'text-gray-500 hover:text-remida-teal'
-        }`}
-        onClick={() => setLanguage('it')}
-      >
-        IT
-      </Button>
-      <span className="text-gray-400">|</span>
-      <Button
-        variant="ghost"
-        size="sm"
-        className={`px-2 py-1 text-sm transition-colors ${
-          language === 'en' 
-            ? 'text-remida-teal font-medium border-b-2 border-remida-teal' 
-            : 'text-gray-500 hover:text-remida-teal'
-        }`}
-        onClick={() => setLanguage('en')}
-      >
-        EN
-      </Button>
+    <div className="flex items-center">
+      <div className="flex items-center bg-background/60 backdrop-blur-sm rounded-md border border-border shadow-sm">
+        <Button
+          variant="ghost"
+          size="sm"
+          className={`px-3 py-1.5 text-sm rounded-l-md transition-colors ${
+            language === 'it' 
+              ? 'bg-primary/10 text-primary font-medium' 
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
+          onClick={() => setLanguage('it')}
+        >
+          IT
+        </Button>
+        <div className="h-5 w-px bg-border mx-0.5"></div>
+        <Button
+          variant="ghost"
+          size="sm"
+          className={`px-3 py-1.5 text-sm rounded-r-md transition-colors ${
+            language === 'en' 
+              ? 'bg-primary/10 text-primary font-medium' 
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
+          onClick={() => setLanguage('en')}
+        >
+          EN
+        </Button>
+      </div>
     </div>
   );
 };
