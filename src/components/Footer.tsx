@@ -1,8 +1,10 @@
 
 import { Link } from 'react-router-dom';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+  const { t } = useLanguage();
   
   return (
     <footer className="bg-remida-teal text-white">
@@ -11,42 +13,42 @@ const Footer = () => {
           <div className="col-span-1 md:col-span-2">
             <h3 className="text-xl font-bold mb-4">ReMida AI</h3>
             <p className="mb-4 text-gray-100">
-              Il tuo assistente finanziario personale, sempre con te. Ti aiutiamo a gestire le tue spese quotidiane e a pianificare il tuo futuro.
+              {t('footer.description')}
             </p>
           </div>
           
           <div>
-            <h4 className="font-bold mb-4">Link Utili</h4>
+            <h4 className="font-bold mb-4">{t('footer.links')}</h4>
             <ul className="space-y-2">
               <li>
                 <Link to="/" className="text-gray-100 hover:text-white transition-colors">
-                  Home
+                  {t('nav.home')}
                 </Link>
               </li>
               <li>
                 <Link to="/about" className="text-gray-100 hover:text-white transition-colors">
-                  Chi Siamo
+                  {t('nav.about')}
                 </Link>
               </li>
               <li>
                 <Link to="/features" className="text-gray-100 hover:text-white transition-colors">
-                  Funzionalità
+                  {t('nav.features')}
                 </Link>
               </li>
             </ul>
           </div>
           
           <div>
-            <h4 className="font-bold mb-4">Contatti</h4>
+            <h4 className="font-bold mb-4">{t('footer.contacts')}</h4>
             <Link to="/contact" className="text-gray-100 hover:text-white transition-colors block mb-2">
-              Contattaci
+              {t('nav.contact')}
             </Link>
             <p className="text-gray-100">info@remida-ai.it</p>
           </div>
         </div>
         
         <div className="border-t border-gray-600 mt-8 pt-6 text-center text-gray-300">
-          <p>&copy; {currentYear} ReMida AI. Tutti i diritti riservati.</p>
+          <p>&copy; {currentYear} ReMida AI. {t('footer.rights')}</p>
         </div>
       </div>
     </footer>

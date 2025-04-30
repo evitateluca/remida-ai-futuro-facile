@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Award, LogOut, User } from 'lucide-react';
+import { Menu, X, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -11,10 +11,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import LanguageSelector from './LanguageSelector';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const { t } = useLanguage();
 
   const toggleMobileMenu = () => {
     setMobileMenuOpen(!mobileMenuOpen);
@@ -33,28 +36,23 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             <Link to="/" className="text-gray-700 hover:text-remida-teal transition-colors">
-              Home
+              {t('nav.home')}
             </Link>
             <Link to="/about" className="text-gray-700 hover:text-remida-teal transition-colors">
-              Chi Siamo
+              {t('nav.about')}
             </Link>
             <Link to="/features" className="text-gray-700 hover:text-remida-teal transition-colors">
-              Funzionalità
-            </Link>
-            <Link to="/pricing" className="text-gray-700 hover:text-remida-teal transition-colors flex items-center">
-              <span>Prezzi</span>
-              <Award className="ml-1 h-4 w-4 text-remida-orange" />
-            </Link>
-            <Link to="/faq" className="text-gray-700 hover:text-remida-teal transition-colors">
-              FAQ
+              {t('nav.features')}
             </Link>
             <Link to="/contact" className="text-gray-700 hover:text-remida-teal transition-colors">
-              Contatti
+              {t('nav.contact')}
             </Link>
           </nav>
           
-          {/* Call to action */}
+          {/* Language Selector & Call to action */}
           <div className="hidden md:flex items-center gap-4">
+            <LanguageSelector />
+            
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -69,31 +67,34 @@ const Navbar = () => {
                   <DropdownMenuItem asChild>
                     <Link to="/profile">
                       <User className="mr-2 h-4 w-4" />
-                      <span>Profilo</span>
+                      <span>{t('nav.profile')}</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => signOut()}>
                     <LogOut className="mr-2 h-4 w-4" />
-                    <span>Logout</span>
+                    <span>{t('nav.logout')}</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
               <Button className="bg-remida-orange hover:bg-remida-orange/90" asChild>
                 <Link to="/auth">
-                  Accedi
+                  {t('nav.login')}
                 </Link>
               </Button>
             )}
           </div>
           
           {/* Mobile menu button */}
-          <button 
-            className="md:hidden text-gray-500 hover:text-gray-700" 
-            onClick={toggleMobileMenu}
-          >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          <div className="md:hidden flex items-center gap-2">
+            <LanguageSelector />
+            <button 
+              className="text-gray-500 hover:text-gray-700" 
+              onClick={toggleMobileMenu}
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
         
         {/* Mobile Navigation */}
@@ -105,43 +106,28 @@ const Navbar = () => {
                 className="text-gray-700 hover:text-remida-teal transition-colors py-2"
                 onClick={toggleMobileMenu}
               >
-                Home
+                {t('nav.home')}
               </Link>
               <Link 
                 to="/about" 
                 className="text-gray-700 hover:text-remida-teal transition-colors py-2"
                 onClick={toggleMobileMenu}
               >
-                Chi Siamo
+                {t('nav.about')}
               </Link>
               <Link 
                 to="/features" 
                 className="text-gray-700 hover:text-remida-teal transition-colors py-2"
                 onClick={toggleMobileMenu}
               >
-                Funzionalità
-              </Link>
-              <Link 
-                to="/pricing" 
-                className="text-gray-700 hover:text-remida-teal transition-colors py-2 flex items-center"
-                onClick={toggleMobileMenu}
-              >
-                <span>Prezzi</span>
-                <Award className="ml-1 h-4 w-4 text-remida-orange" />
-              </Link>
-              <Link 
-                to="/faq" 
-                className="text-gray-700 hover:text-remida-teal transition-colors py-2"
-                onClick={toggleMobileMenu}
-              >
-                FAQ
+                {t('nav.features')}
               </Link>
               <Link 
                 to="/contact" 
                 className="text-gray-700 hover:text-remida-teal transition-colors py-2"
                 onClick={toggleMobileMenu}
               >
-                Contatti
+                {t('nav.contact')}
               </Link>
               
               {user ? (
@@ -154,12 +140,12 @@ const Navbar = () => {
                   className="w-full mt-2"
                 >
                   <LogOut className="mr-2 h-4 w-4" />
-                  Logout
+                  {t('nav.logout')}
                 </Button>
               ) : (
                 <Button className="bg-remida-orange hover:bg-remida-orange/90 w-full mt-2" asChild>
                   <Link to="/auth" onClick={toggleMobileMenu}>
-                    Accedi
+                    {t('nav.login')}
                   </Link>
                 </Button>
               )}
