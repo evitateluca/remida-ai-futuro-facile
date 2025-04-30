@@ -5,65 +5,65 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;  /* Grigio chiaro sofisticato */
-    --foreground: 215 25% 27%;  /* Blu scuro per il testo */
+    --background: 0 0% 96%;  /* Light gray background */
+    --foreground: 180 100% 25%;  /* Teal text */
 
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 27%;
+    --card-foreground: 180 100% 25%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 27%;
+    --popover-foreground: 180 100% 25%;
 
-    --primary: 180 70% 25%;  /* Teal più profondo e professionale */
+    --primary: 180 100% 25%;  /* Teal primary */
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 217 19% 27%;  /* Blu scuro per elementi secondari */
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96%;  /* Light gray secondary */
+    --secondary-foreground: 180 100% 25%;
 
-    --muted: 210 20% 96%;
-    --muted-foreground: 215 25% 40%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 180 70% 25%;
 
-    --accent: 25 95% 53%;  /* Arancione più sottile e professionale */
+    --accent: 16 100% 60%;  /* Orange accent */
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 180 70% 25%;
+    --border: 180 100% 25% / 0.2;
+    --input: 180 100% 25% / 0.2;
+    --ring: 180 100% 25%;
 
-    --radius: 0.5rem;  /* Bordi più sottili per un look professionale */
+    --radius: 0.75rem;
   }
 
   .dark {
-    --background: 215 28% 17%;
-    --foreground: 210 20% 98%;
+    --background: 180 70% 10%;
+    --foreground: 0 0% 96%;
 
-    --card: 215 28% 17%;
-    --card-foreground: 210 20% 98%;
+    --card: 180 70% 10%;
+    --card-foreground: 0 0% 96%;
 
-    --popover: 215 28% 17%;
-    --popover-foreground: 210 20% 98%;
+    --popover: 180 70% 10%;
+    --popover-foreground: 0 0% 96%;
 
-    --primary: 180 70% 35%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 0 0% 96%;
+    --primary-foreground: 180 70% 10%;
 
-    --secondary: 217 19% 27%;
-    --secondary-foreground: 210 20% 98%;
+    --secondary: 180 50% 20%;
+    --secondary-foreground: 0 0% 96%;
 
-    --muted: 215 28% 25%;
-    --muted-foreground: 210 20% 80%;
+    --muted: 180 50% 20%;
+    --muted-foreground: 0 0% 70%;
 
-    --accent: 25 95% 53%;
+    --accent: 16 100% 60%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 215 28% 25%;
-    --input: 215 28% 25%;
-    --ring: 180 70% 35%;
+    --border: 180 50% 50% / 0.3;
+    --input: 180 50% 50% / 0.3;
+    --ring: 180 50% 50% / 0.7;
   }
 }
 
@@ -78,7 +78,7 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-medium tracking-tight;
+    @apply font-semibold;
   }
 }
 
@@ -88,54 +88,22 @@
   }
   
   .btn-primary {
-    @apply bg-gradient-to-r from-accent to-accent/80 text-white px-6 py-3 rounded-md font-medium hover:opacity-90 transition shadow-sm;
+    @apply bg-remida-orange text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-opacity;
   }
   
   .btn-secondary {
-    @apply bg-gradient-to-r from-primary to-primary/90 text-white px-6 py-3 rounded-md font-medium hover:opacity-90 transition shadow-sm;
+    @apply bg-remida-teal text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-opacity;
   }
 
   .section-title {
-    @apply text-3xl md:text-4xl font-medium text-primary mb-6 tracking-tight;
+    @apply text-3xl md:text-4xl font-bold text-remida-teal mb-6;
   }
   
   .feature-card {
-    @apply bg-white rounded-md p-6 shadow-sm transition-all hover:shadow border border-border flex flex-col;
+    @apply bg-white rounded-xl p-6 shadow-md transition-all hover:shadow-lg border border-gray-100;
   }
   
   .input-field {
-    @apply w-full px-4 py-3 rounded-md border border-input focus:outline-none focus:ring-1 focus:ring-primary;
-  }
-
-  /* Card con stile glassmorphism per un look più tech */
-  .glass-card {
-    @apply bg-white/80 backdrop-blur-sm border border-white/20 shadow-md rounded-lg;
-  }
-  
-  /* Gradiente per elementi di primo piano */
-  .gradient-text {
-    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent font-semibold;
-  }
-  
-  /* Effetti hover più sofisticati */
-  .hover-lift {
-    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-md;
-  }
-
-  /* Stile per elementi tech */
-  .tech-border {
-    @apply border border-border rounded-md shadow-sm hover:border-primary/50 transition-colors;
-  }
-  
-  /* Dashboard card style */
-  .dashboard-card {
-    @apply bg-card rounded-lg border border-border p-5 shadow-sm hover:shadow-md transition-all;
-  }
-  
-  /* Bottoni più tech-oriented */
-  .tech-button {
-    @apply relative overflow-hidden bg-primary text-primary-foreground rounded-md px-5 py-2.5 
-    transition-all hover:bg-primary/90 focus:ring-2 focus:ring-primary/20 focus:outline-none
-    shadow-sm;
+    @apply w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-remida-teal;
   }
 }
