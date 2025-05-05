@@ -93,6 +93,78 @@ export type Database = {
         }
         Relationships: []
       }
+      transactions: {
+        Row: {
+          amount: number
+          asset: string
+          created_at: string
+          date: string
+          id: string
+          price: number
+          source: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          asset: string
+          created_at?: string
+          date: string
+          id?: string
+          price: number
+          source: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          asset?: string
+          created_at?: string
+          date?: string
+          id?: string
+          price?: number
+          source?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_assets: {
+        Row: {
+          amount: number
+          id: string
+          last_updated: string
+          name: string
+          source: string
+          symbol: string | null
+          type: string
+          user_id: string
+          value: number
+        }
+        Insert: {
+          amount: number
+          id?: string
+          last_updated?: string
+          name: string
+          source: string
+          symbol?: string | null
+          type: string
+          user_id: string
+          value: number
+        }
+        Update: {
+          amount?: number
+          id?: string
+          last_updated?: string
+          name?: string
+          source?: string
+          symbol?: string | null
+          type?: string
+          user_id?: string
+          value?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

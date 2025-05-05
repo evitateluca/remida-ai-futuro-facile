@@ -9,9 +9,10 @@ import { AssetData, saveAssetData } from '@/integrations/dataImport/ImportServic
 type WalletConnectProps = {
   userId: string;
   onDataImported: () => void;
+  onError: (message: string) => void;
 };
 
-const WalletConnect = ({ userId, onDataImported }: WalletConnectProps) => {
+const WalletConnect = ({ userId, onDataImported, onError }: WalletConnectProps) => {
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectedWallets, setConnectedWallets] = useState<string[]>([]);
   
@@ -106,19 +107,21 @@ const WalletConnect = ({ userId, onDataImported }: WalletConnectProps) => {
       if (saveResult) {
         setConnectedWallets(prev => [...prev, walletId]);
         toast({
-          title: 'Wallet Connected',
-          description: `Your ${walletOptions.find(w => w.id === walletId)?.name} wallet has been connected successfully.`,
+          title: 'Wallet Collegato',
+          description: `Il tuo wallet ${walletOptions.find(w => w.id === walletId)?.name} è stato collegato con successo.`,
         });
         onDataImported();
       } else {
-        throw new Error('Failed to save wallet data');
+        throw new Error('Errore nel salvataggio dei dati del wallet');
       }
     } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Errore di connessione al wallet';
       toast({
-        title: 'Connection Error',
-        description: 'Could not connect wallet. Please try again.',
+        title: 'Errore di Connessione',
+        description: 'Impossibile collegarsi al wallet. Riprova.',
         variant: 'destructive',
       });
+      onError(errorMsg);
     } finally {
       setIsConnecting(false);
     }
@@ -127,9 +130,9 @@ const WalletConnect = ({ userId, onDataImported }: WalletConnectProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Connect Wallet</CardTitle>
+        <CardTitle>Collega Wallet</CardTitle>
         <CardDescription>
-          Connect your crypto wallets to track your assets across different blockchains
+          Collega i tuoi wallet crypto per tracciare i tuoi asset su diverse blockchain
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -147,7 +150,7 @@ const WalletConnect = ({ userId, onDataImported }: WalletConnectProps) => {
               {connectedWallets.includes(wallet.id) ? (
                 <div className="flex items-center text-green-600">
                   <CheckCircle2 size={18} />
-                  <span className="ml-2">Connected</span>
+                  <span className="ml-2">Collegato</span>
                 </div>
               ) : (
                 <Button 
@@ -157,7 +160,7 @@ const WalletConnect = ({ userId, onDataImported }: WalletConnectProps) => {
                   {isConnecting ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
-                    'Connect'
+                    'Collega'
                   )}
                 </Button>
               )}
@@ -167,7 +170,7 @@ const WalletConnect = ({ userId, onDataImported }: WalletConnectProps) => {
       </CardContent>
       <CardFooter>
         <p className="text-xs text-gray-500 w-full text-center">
-          We support Ethereum, Bitcoin, and Solana blockchains.
+          Supportiamo le blockchain Ethereum, Bitcoin e Solana.
         </p>
       </CardFooter>
     </Card>

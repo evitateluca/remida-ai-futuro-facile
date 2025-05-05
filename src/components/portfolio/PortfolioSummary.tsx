@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { AssetData, getUserAssets } from '@/integrations/dataImport/ImportService';
 import { Progress } from '@/components/ui/progress';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { toast } from '@/hooks/use-toast';
 
 type PortfolioSummaryProps = {
   userId: string;
@@ -52,12 +53,19 @@ const PortfolioSummary = ({ userId, refreshTrigger }: PortfolioSummaryProps) => 
         setAssetsByType(chartData);
       } catch (error) {
         console.error('Error fetching portfolio data:', error);
+        toast({
+          title: "Errore",
+          description: "Impossibile caricare i dati del portafoglio",
+          variant: "destructive"
+        });
       } finally {
         setLoading(false);
       }
     };
     
-    fetchAssets();
+    if (userId) {
+      fetchAssets();
+    }
   }, [userId, refreshTrigger]);
 
   if (loading) {
@@ -102,7 +110,7 @@ const PortfolioSummary = ({ userId, refreshTrigger }: PortfolioSummaryProps) => 
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value) => `€${value}`} />
+                <Tooltip formatter={(value) => `€${Number(value).toLocaleString()}`} />
               </PieChart>
             </ResponsiveContainer>
           </div>

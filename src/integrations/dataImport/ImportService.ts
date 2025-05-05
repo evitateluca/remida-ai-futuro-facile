@@ -41,7 +41,10 @@ export const saveAssetData = async (assets: AssetData[]) => {
         last_updated: new Date().toISOString()
       })), { onConflict: 'name,user_id' });
 
-    if (error) throw error;
+    if (error) {
+      console.error('Error saving asset data:', error);
+      throw error;
+    }
     return true;
   } catch (error) {
     console.error('Error saving asset data:', error);
@@ -64,7 +67,10 @@ export const saveTransactionData = async (transactions: TransactionData[]) => {
         source: tx.source,
       })));
 
-    if (error) throw error;
+    if (error) {
+      console.error('Error saving transaction data:', error);
+      throw error;
+    }
     return true;
   } catch (error) {
     console.error('Error saving transaction data:', error);
@@ -81,6 +87,8 @@ export const getUserAssets = async (userId: string): Promise<AssetData[]> => {
       .eq('user_id', userId);
 
     if (error) throw error;
+    
+    if (!data) return [];
     
     return data.map(item => ({
       id: item.id,
@@ -109,6 +117,8 @@ export const getUserTransactions = async (userId: string): Promise<TransactionDa
       .order('date', { ascending: false });
 
     if (error) throw error;
+    
+    if (!data) return [];
     
     return data.map(item => ({
       id: item.id,

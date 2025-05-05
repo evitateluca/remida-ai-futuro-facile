@@ -10,9 +10,10 @@ import { AssetData, saveAssetData, TransactionData, saveTransactionData } from '
 type CsvImportProps = {
   userId: string;
   onDataImported: () => void;
+  onError: (message: string) => void;
 };
 
-const CsvImport = ({ userId, onDataImported }: CsvImportProps) => {
+const CsvImport = ({ userId, onDataImported, onError }: CsvImportProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isImporting, setIsImporting] = useState(false);
@@ -26,7 +27,7 @@ const CsvImport = ({ userId, onDataImported }: CsvImportProps) => {
       setImportError(null);
     } else {
       setSelectedFile(null);
-      setImportError('Please select a valid CSV file');
+      setImportError('Seleziona un file CSV valido');
     }
   };
 
@@ -117,7 +118,7 @@ const CsvImport = ({ userId, onDataImported }: CsvImportProps) => {
 
   const handleImport = async () => {
     if (!selectedFile) {
-      setImportError('Please select a file first');
+      setImportError('Seleziona prima un file');
       return;
     }
 
@@ -136,20 +137,22 @@ const CsvImport = ({ userId, onDataImported }: CsvImportProps) => {
       if (assetsSaved && transactionsSaved) {
         setImportSuccess(true);
         toast({
-          title: 'Import Successful',
-          description: `Imported ${assets.length} assets and ${transactions.length} transactions from ${selectedFile.name}`,
+          title: 'Importazione Completata',
+          description: `Importati ${assets.length} asset e ${transactions.length} transazioni da ${selectedFile.name}`,
         });
         onDataImported();
       } else {
-        throw new Error('Failed to save imported data');
+        throw new Error('Errore nel salvataggio dei dati importati');
       }
     } catch (err) {
-      setImportError('Failed to import CSV data. Please check the file format.');
+      const errorMsg = err instanceof Error ? err.message : 'Errore durante l\'importazione CSV';
+      setImportError(errorMsg);
       toast({
-        title: 'Import Failed',
-        description: 'There was a problem importing your data.',
+        title: 'Importazione Fallita',
+        description: 'Si è verificato un problema durante l\'importazione dei tuoi dati.',
         variant: 'destructive',
       });
+      onError(errorMsg);
     } finally {
       setIsImporting(false);
     }
@@ -158,9 +161,9 @@ const CsvImport = ({ userId, onDataImported }: CsvImportProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Import CSV</CardTitle>
+        <CardTitle>Importa CSV</CardTitle>
         <CardDescription>
-          Import your financial data from a spreadsheet file (.csv format)
+          Importa i tuoi dati finanziari da un foglio di calcolo (.csv format)
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -185,13 +188,13 @@ const CsvImport = ({ userId, onDataImported }: CsvImportProps) => {
           ) : importSuccess ? (
             <div className="space-y-2">
               <CheckCircle2 className="h-8 w-8 mx-auto text-green-500" />
-              <p className="font-medium text-green-700">Import successful!</p>
+              <p className="font-medium text-green-700">Importazione completata!</p>
             </div>
           ) : (
             <div className="space-y-2">
               <Upload className="h-8 w-8 mx-auto text-gray-400" />
-              <p className="font-medium">Click to select a CSV file</p>
-              <p className="text-sm text-gray-500">or drag and drop it here</p>
+              <p className="font-medium">Clicca per selezionare un file CSV</p>
+              <p className="text-sm text-gray-500">o trascinalo qui</p>
             </div>
           )}
         </div>
@@ -204,10 +207,10 @@ const CsvImport = ({ userId, onDataImported }: CsvImportProps) => {
         )}
         
         <div>
-          <p className="text-sm text-gray-500 mb-2">Format required:</p>
+          <p className="text-sm text-gray-500 mb-2">Formato richiesto:</p>
           <div className="text-xs bg-gray-50 p-2 rounded font-mono">
             name,type,amount,value,currency<br />
-            "Bank Account","fiat",5000,5000,EUR<br />
+            "Conto Bancario","fiat",5000,5000,EUR<br />
             "Bitcoin","crypto",0.5,25000,USD<br />
             "Apple Stock","stock",10,2000,USD
           </div>
@@ -220,7 +223,7 @@ const CsvImport = ({ userId, onDataImported }: CsvImportProps) => {
           disabled={!selectedFile || isImporting || importSuccess}
         >
           {isImporting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {isImporting ? 'Importing...' : 'Import Data'}
+          {isImporting ? 'Importazione in corso...' : 'Importa Dati'}
         </Button>
       </CardFooter>
     </Card>

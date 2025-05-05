@@ -10,9 +10,10 @@ import { AssetData, saveAssetData } from '@/integrations/dataImport/ImportServic
 type CoinbaseConnectProps = {
   userId: string;
   onDataImported: () => void;
+  onError: (message: string) => void;
 };
 
-const CoinbaseConnect = ({ userId, onDataImported }: CoinbaseConnectProps) => {
+const CoinbaseConnect = ({ userId, onDataImported, onError }: CoinbaseConnectProps) => {
   const [apiKey, setApiKey] = useState('');
   const [apiSecret, setApiSecret] = useState('');
   const [isConnecting, setIsConnecting] = useState(false);
@@ -21,7 +22,7 @@ const CoinbaseConnect = ({ userId, onDataImported }: CoinbaseConnectProps) => {
 
   const handleConnect = async () => {
     if (!apiKey || !apiSecret) {
-      setError('Please enter both API Key and Secret');
+      setError('Inserisci sia API Key che Secret');
       return;
     }
 
@@ -85,21 +86,23 @@ const CoinbaseConnect = ({ userId, onDataImported }: CoinbaseConnectProps) => {
       if (saveResult) {
         setIsConnected(true);
         toast({
-          title: 'Coinbase Connected',
-          description: 'Your Coinbase account has been successfully connected.',
+          title: 'Coinbase Collegato',
+          description: 'Il tuo account Coinbase è stato collegato con successo.',
           variant: 'default',
         });
         onDataImported();
       } else {
-        throw new Error('Failed to save asset data');
+        throw new Error('Errore nel salvataggio dei dati');
       }
     } catch (err) {
-      setError('Failed to connect to Coinbase. Please check your API credentials.');
+      const errorMsg = err instanceof Error ? err.message : 'Errore di connessione a Coinbase';
+      setError(errorMsg);
       toast({
-        title: 'Connection Error',
-        description: 'Could not connect to Coinbase API.',
+        title: 'Errore di Connessione',
+        description: 'Impossibile collegarsi a Coinbase API.',
         variant: 'destructive',
       });
+      onError(errorMsg);
     } finally {
       setIsConnecting(false);
     }
@@ -108,9 +111,9 @@ const CoinbaseConnect = ({ userId, onDataImported }: CoinbaseConnectProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Connect Coinbase</CardTitle>
+        <CardTitle>Collega Coinbase</CardTitle>
         <CardDescription>
-          Import your Coinbase portfolio to automatically track your crypto assets
+          Importa il tuo portafoglio Coinbase per tracciare automaticamente i tuoi asset crypto
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -130,7 +133,7 @@ const CoinbaseConnect = ({ userId, onDataImported }: CoinbaseConnectProps) => {
                 type="text"
                 value={apiKey}
                 onChange={(e) => setApiKey(e.target.value)}
-                placeholder="Enter your Coinbase API key"
+                placeholder="Inserisci la tua Coinbase API key"
               />
             </div>
             <div>
@@ -142,7 +145,7 @@ const CoinbaseConnect = ({ userId, onDataImported }: CoinbaseConnectProps) => {
                 type="password"
                 value={apiSecret}
                 onChange={(e) => setApiSecret(e.target.value)}
-                placeholder="Enter your Coinbase API secret"
+                placeholder="Inserisci la tua Coinbase API secret"
               />
             </div>
             {error && (
@@ -170,7 +173,7 @@ const CoinbaseConnect = ({ userId, onDataImported }: CoinbaseConnectProps) => {
             disabled={isConnecting}
           >
             {isConnecting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isConnecting ? 'Connecting...' : 'Connect'}
+            {isConnecting ? 'Connessione in corso...' : 'Connetti'}
           </Button>
         )}
       </CardFooter>
