@@ -9,6 +9,33 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      exchange_tokens: {
+        Row: {
+          access_token: string
+          created_at: string | null
+          exchange: string
+          id: string
+          refresh_token: string | null
+          user_id: string | null
+        }
+        Insert: {
+          access_token: string
+          created_at?: string | null
+          exchange: string
+          id?: string
+          refresh_token?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          access_token?: string
+          created_at?: string | null
+          exchange?: string
+          id?: string
+          refresh_token?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

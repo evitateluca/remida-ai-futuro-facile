@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -26,7 +27,8 @@ import {
   TrendingDown,
   Medal,
   ChevronRight,
-  Bell
+  Bell,
+  Plus
 } from 'lucide-react';
 import Shield from '@/components/icons/Shield';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -35,15 +37,21 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Slider } from '@/components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
-// Import the new features components
+// Import components
 import EducationalPath from '@/components/features/EducationalPath';
 import FuturePlanning from '@/components/features/FuturePlanning';
+import IntegrationManager from '@/components/integrations/IntegrationManager';
+import PortfolioSummary from '@/components/portfolio/PortfolioSummary';
+
+// Import services
+import { getUserAssets, getUserTransactions } from '@/integrations/dataImport/ImportService';
 
 const Dashboard = () => {
   const { user, loading } = useAuth();
@@ -57,22 +65,19 @@ const Dashboard = () => {
   const [selectedGoal, setSelectedGoal] = useState(null);
   const [newGoalName, setNewGoalName] = useState('');
   const [newGoalAmount, setNewGoalAmount] = useState('');
-  const [newGoalTimeframe, setNewGoalTimeframe] = useState(''); // Fixed: renamed setter function
+  const [newGoalTimeframe, setNewGoalTimeframe] = useState('');
   
-  // Stato per tenere traccia dei livelli e punti utente
+  // State for user gamification and portfolio
   const [userLevel, setUserLevel] = useState(2);
   const [userPoints, setUserPoints] = useState(120);
   const [nextLevelPoints, setNextLevelPoints] = useState(200);
+  const [showIntegrationManager, setShowIntegrationManager] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
   
-  // Dati del portafoglio simulato
-  const portfolioData = [
-    { name: 'Bitcoin (BTC)', value: 2500, percentage: 25, color: '#FF9500' },
-    { name: 'Ethereum (ETH)', value: 1800, percentage: 18, color: '#627EEA' },
-    { name: 'USD Coin (USDC)', value: 3000, percentage: 30, color: '#2775CA' },
-    { name: 'Tether (USDT)', value: 1200, percentage: 12, color: '#26A17B' },
-    { name: 'Conto Corrente', value: 1500, percentage: 15, color: '#00C389' }
-  ];
-
+  // Dati del portafoglio
+  const [portfolioData, setPortfolioData] = useState([]);
+  const [totalPortfolioValue, setTotalPortfolioValue] = useState(0);
+  
   // Money Dials - categorie di spesa
   const moneyDials = [
     { category: 'Cibo & Bevande', amount: 450, importance: 7, color: '#FF6B6B' },
@@ -146,6 +151,64 @@ const Dashboard = () => {
     { month: 'Dic', pessimistic: 4250, expected: 4800, optimistic: 5600 },
   ];
   
+  // Planning simulator
+  const [simulationInputs, setSimulationInputs] = useState({
+    goalName: "Fondo di emergenza",
+    targetAmount: 5000,
+    timeframe: 6, // months
+    monthlyContribution: 500,
+    strategy: "mixed", // can be: safe, mixed, aggressive
+    expectedReturn: 0.05, // 5% annually
+  });
+  
+  const [simulationResults, setSimulationResults] = useState({
+    monthlyContribution: 0,
+    expectedReturn: 0,
+    totalContributions: 0,
+    totalReturns: 0,
+    finalAmount: 0,
+  });
+  
+  // Calculate simulation results when inputs change
+  useEffect(() => {
+    const { targetAmount, timeframe, expectedReturn, strategy } = simulationInputs;
+    
+    // Adjust expected return based on strategy
+    let annualReturn = expectedReturn;
+    if (strategy === "safe") {
+      annualReturn = 0.03; // 3%
+    } else if (strategy === "mixed") {
+      annualReturn = 0.05; // 5%
+    } else if (strategy === "aggressive") {
+      annualReturn = 0.08; // 8%
+    }
+    
+    // Convert annual return to monthly
+    const monthlyReturn = Math.pow(1 + annualReturn, 1/12) - 1;
+    
+    // Calculate required monthly contribution
+    const monthlyContribution = targetAmount / ((Math.pow(1 + monthlyReturn, timeframe) - 1) / monthlyReturn);
+    
+    // Calculate total contributions and returns
+    const totalContributions = monthlyContribution * timeframe;
+    const totalReturns = targetAmount - totalContributions;
+    
+    setSimulationResults({
+      monthlyContribution: Math.round(monthlyContribution),
+      expectedReturn: annualReturn * 100, // convert to percentage
+      totalContributions: Math.round(totalContributions),
+      totalReturns: Math.round(totalReturns),
+      finalAmount: targetAmount,
+    });
+    
+    // Update the monthly contribution in the inputs
+    setSimulationInputs(prev => ({
+      ...prev,
+      monthlyContribution: Math.round(monthlyContribution)
+    }));
+    
+  }, [simulationInputs.targetAmount, simulationInputs.timeframe, simulationInputs.strategy]);
+  
   useEffect(() => {
     if (!loading && !user) {
       navigate('/auth');
@@ -154,6 +217,7 @@ const Dashboard = () => {
     
     if (user) {
       fetchProfileData();
+      fetchUserAssets();
     }
   }, [user, loading, navigate]);
   
@@ -185,6 +249,45 @@ const Dashboard = () => {
     }
   };
   
+  const fetchUserAssets = async () => {
+    if (!user) return;
+    
+    try {
+      const assets = await getUserAssets(user.id);
+      
+      // Transform assets for the pie chart
+      const chartData = assets.map(asset => ({
+        name: asset.name,
+        value: asset.value,
+        percentage: 0, // Will be calculated after we get the total
+        color: getAssetColor(asset.type)
+      }));
+      
+      // Calculate the total value and percentages
+      const total = chartData.reduce((sum, asset) => sum + asset.value, 0);
+      
+      chartData.forEach(asset => {
+        asset.percentage = (asset.value / total) * 100;
+      });
+      
+      setPortfolioData(chartData);
+      setTotalPortfolioValue(total);
+    } catch (error) {
+      console.error('Error fetching user assets:', error);
+    }
+  };
+  
+  const getAssetColor = (type: string) => {
+    const colors = {
+      crypto: '#FF9500',
+      fiat: '#00C389',
+      stock: '#3B82F6',
+      other: '#8884D8'
+    };
+    
+    return colors[type as keyof typeof colors] || '#CCCCCC';
+  };
+  
   const handleSendMessage = () => {
     if (!newMessage.trim()) return;
     
@@ -204,36 +307,99 @@ const Dashboard = () => {
       });
       
       setChatMessages(prev => [...prev, { role: 'assistant', content: response }]);
+      
+      // Award points for engagement
+      setUserPoints(prev => {
+        const newPoints = prev + 5;
+        if (newPoints >= nextLevelPoints) {
+          setUserLevel(prevLevel => prevLevel + 1);
+          setNextLevelPoints(prevLevel => prevLevel + 100);
+          toast({
+            title: 'Level Up!',
+            description: `Congratulazioni! Sei salito al livello ${userLevel + 1}!`,
+          });
+        }
+        return newPoints;
+      });
     }, 1000);
     
     setNewMessage('');
   };
   
-  const handleViewGoalDetails = (goal) => {
+  const handleViewGoalDetails = (goal: any) => {
     setSelectedGoal(goal);
   };
 
   const handleAddObjective = () => {
-    toast({
-      title: "Funzionalità in arrivo",
-      description: "La creazione di nuovi obiettivi sarà disponibile a breve!",
-    });
-  };
-  
-  const handleViewTransactions = () => {
-    toast({
-      title: "Transazioni",
-      description: "Funzionalità in arrivo nelle prossime versioni!",
-    });
-  };
-  
-  const handleConnectWallet = () => {
-    toast({
-      title: "Collegamento Wallet",
-      description: "La funzionalità di collegamento wallet sarà disponibile a breve!",
-    });
-  };
+    if (!simulationInputs.goalName || !simulationInputs.targetAmount) {
+      toast({
+        title: "Informazioni mancanti",
+        description: "Per favore, inserisci nome e importo obiettivo.",
+        variant: "destructive"
+      });
+      return;
+    }
 
+    const newObjective = {
+      id: objectives.length + 1,
+      name: simulationInputs.goalName,
+      current: 0,
+      target: simulationInputs.targetAmount,
+      percentage: 0,
+      timeframe: `${simulationInputs.timeframe} mesi`,
+      strategy: simulationInputs.strategy === 'safe' ? 'Stablecoin staking' : 
+                simulationInputs.strategy === 'mixed' ? 'Stablecoin + BTC/ETH' : 'Crypto diversificata',
+      monthlyContribution: simulationInputs.monthlyContribution
+    };
+    
+    objectives.push(newObjective);
+    
+    toast({
+      title: "Obiettivo creato",
+      description: `L'obiettivo "${simulationInputs.goalName}" è stato creato con successo!`,
+    });
+    
+    // Clear the simulation form
+    setSimulationInputs({
+      goalName: "",
+      targetAmount: 5000,
+      timeframe: 6,
+      monthlyContribution: 500,
+      strategy: "mixed",
+      expectedReturn: 0.05,
+    });
+    
+    // Award points for creating a goal
+    setUserPoints(prev => prev + 20);
+  };
+  
+  const handleSetStrategy = (strategy: string) => {
+    setSimulationInputs(prev => ({
+      ...prev,
+      strategy
+    }));
+  };
+  
+  const handleDataImported = () => {
+    setRefreshTrigger(prev => prev + 1);
+    fetchUserAssets();
+    
+    // Award points for connecting a data source
+    setUserPoints(prev => prev + 30);
+    
+    toast({
+      title: "Dati importati",
+      description: "I tuoi dati finanziari sono stati importati con successo!",
+    });
+  };
+  
+  const handleSetTimeframe = (months: number) => {
+    setSimulationInputs(prev => ({
+      ...prev,
+      timeframe: months
+    }));
+  };
+  
   if (loading || isLoading) {
     return (
       <Layout>
@@ -271,13 +437,41 @@ const Dashboard = () => {
       {/* Dashboard Content */}
       <section className="py-10">
         <div className="container-custom">
+          {/* Integration Manager Dialog */}
+          <Dialog open={showIntegrationManager} onOpenChange={setShowIntegrationManager}>
+            <DialogContent className="max-w-4xl">
+              <DialogHeader>
+                <DialogTitle>Gestione Integrazioni</DialogTitle>
+                <DialogDescription>
+                  Collega i tuoi conti e servizi finanziari per visualizzarli in un'unica dashboard
+                </DialogDescription>
+              </DialogHeader>
+              <IntegrationManager 
+                userId={user?.id || ''} 
+                onClose={() => setShowIntegrationManager(false)}
+                onDataImported={handleDataImported}
+              />
+            </DialogContent>
+          </Dialog>
+
+          {/* Main Tabs */}
           <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid grid-cols-4 mb-8">
-              <TabsTrigger value="overview">Panoramica</TabsTrigger>
-              <TabsTrigger value="portfolio">Patrimonio</TabsTrigger>
-              <TabsTrigger value="planning">Pianificazione</TabsTrigger>
-              <TabsTrigger value="chatai">Chat AI</TabsTrigger>
-            </TabsList>
+            <div className="flex justify-between items-center mb-8">
+              <TabsList className="grid grid-cols-4">
+                <TabsTrigger value="overview">Panoramica</TabsTrigger>
+                <TabsTrigger value="portfolio">Patrimonio</TabsTrigger>
+                <TabsTrigger value="planning">Pianificazione</TabsTrigger>
+                <TabsTrigger value="chatai">Chat AI</TabsTrigger>
+              </TabsList>
+              
+              <Button 
+                className="bg-remida-teal hover:bg-remida-teal/90"
+                onClick={() => setShowIntegrationManager(true)}
+              >
+                <Plus size={16} className="mr-2" />
+                Collega Dati
+              </Button>
+            </div>
             
             {/* Overview Tab */}
             <TabsContent value="overview">
@@ -290,7 +484,9 @@ const Dashboard = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-remida-teal">€10.000</div>
+                    <div className="text-2xl font-bold text-remida-teal">
+                      €{totalPortfolioValue > 0 ? totalPortfolioValue.toLocaleString() : "0"}
+                    </div>
                     <div className="flex items-center text-sm text-green-600">
                       <ArrowUpRight className="h-4 w-4 mr-1" /> 
                       <span>+€500 (5%) rispetto al mese scorso</span>
@@ -309,7 +505,11 @@ const Dashboard = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-remida-teal">€8.500</div>
+                    <div className="text-2xl font-bold text-remida-teal">
+                      €{portfolioData.filter(a => a.name.includes('Bitcoin') || a.name.includes('Ethereum') || 
+                        a.name.includes('USDT') || a.name.includes('USDC'))
+                        .reduce((sum, asset) => sum + asset.value, 0).toLocaleString()}
+                    </div>
                     <div className="flex items-center text-sm text-green-600">
                       <ArrowUpRight className="h-4 w-4 mr-1" /> 
                       <span>+€600 (7.5%) rispetto al mese scorso</span>
@@ -320,7 +520,7 @@ const Dashboard = () => {
                       variant="outline" 
                       size="sm" 
                       className="text-remida-teal"
-                      onClick={handleConnectWallet}
+                      onClick={() => setShowIntegrationManager(true)}
                     >
                       Collega Wallet <ArrowRight className="ml-1 h-4 w-4" />
                     </Button>
@@ -335,7 +535,7 @@ const Dashboard = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-remida-orange">3 Attivi</div>
+                    <div className="text-2xl font-bold text-remida-orange">{objectives.length} Attivi</div>
                     <p className="text-sm text-gray-600">50% completati in media</p>
                     <Progress value={50} className="h-2 mt-2" />
                   </CardContent>
@@ -345,7 +545,6 @@ const Dashboard = () => {
                       size="sm" 
                       className="text-remida-orange"
                       onClick={() => {
-                        // Fixed: Using query selector to find the planning tab and dispatch a click event properly
                         const planningTab = document.querySelector('button[value="planning"]');
                         if (planningTab) {
                           (planningTab as HTMLButtonElement).click();
@@ -377,7 +576,7 @@ const Dashboard = () => {
                           <CartesianGrid strokeDasharray="3 3" />
                           <XAxis dataKey="name" />
                           <YAxis />
-                          <Tooltip />
+                          <RechartsTooltip />
                           <Line type="monotone" dataKey="income" stroke="#8884d8" activeDot={{ r: 8 }} name="Entrate" />
                           <Line type="monotone" dataKey="expenses" stroke="#ff7300" name="Uscite" />
                           <Line type="monotone" dataKey="savings" stroke="#82ca9d" name="Risparmi" />
@@ -413,7 +612,7 @@ const Dashboard = () => {
                               <Cell key={`cell-${index}`} fill={entry.color} />
                             ))}
                           </Pie>
-                          <Tooltip formatter={(value) => `€${value}`} />
+                          <RechartsTooltip formatter={(value) => `€${value}`} />
                         </PieChart>
                       </ResponsiveContainer>
                     </div>
@@ -426,71 +625,48 @@ const Dashboard = () => {
             <TabsContent value="portfolio">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="md:col-span-1">
-                  <Card className="h-full">
-                    <CardHeader>
-                      <CardTitle>Il Tuo Portafoglio</CardTitle>
-                      <CardDescription>Distribuzione degli asset</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="h-64 flex items-center justify-center">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <PieChart>
-                            <Pie
-                              data={portfolioData}
-                              cx="50%"
-                              cy="50%"
-                              labelLine={false}
-                              outerRadius={80}
-                              fill="#8884d8"
-                              dataKey="value"
-                              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                            >
-                              {portfolioData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.color} />
-                              ))}
-                            </Pie>
-                            <Tooltip formatter={(value) => `€${value}`} />
-                          </PieChart>
-                        </ResponsiveContainer>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <PortfolioSummary userId={user?.id || ''} refreshTrigger={refreshTrigger} />
                 </div>
                 
                 <div className="md:col-span-2">
                   <Card>
                     <CardHeader>
-                      <CardTitle>Dettaglio Asset</CardTitle>
-                      <CardDescription>Valori e percentuali</CardDescription>
+                      <CardTitle>Suggerimenti di Allocazione</CardTitle>
+                      <CardDescription>Come ottimizzare il tuo portafoglio</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="space-y-4">
-                        {portfolioData.map((asset, index) => (
-                          <div key={index}>
-                            <div className="flex justify-between mb-1">
-                              <span className="text-sm font-medium">{asset.name}</span>
-                              <span className="text-sm font-medium">€{asset.value}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Progress value={asset.percentage} className="h-2" 
-                                style={{color: asset.color}} />
-                              <span className="text-xs text-gray-500">{asset.percentage}%</span>
-                            </div>
+                      <div className="space-y-6">
+                        <div className="p-4 border border-green-100 bg-green-50 rounded-lg">
+                          <h3 className="font-medium text-lg flex items-center mb-2">
+                            <Shield className="mr-2 h-5 w-5 text-green-600" />
+                            <span>Fondo di Emergenza con Stablecoin</span>
+                          </h3>
+                          <p className="mb-3 text-gray-700">Considera di allocare il 15-20% del tuo patrimonio in stablecoin come USDT o USDC. Potrai guadagnare interessi attraverso lo staking (4-6% annuo) mentre mantieni liquidità per le emergenze.</p>
+                          <div className="flex justify-end">
+                            <Button variant="outline" size="sm">Impara di più</Button>
                           </div>
-                        ))}
-                      </div>
-                      
-                      <div className="mt-8">
-                        <Button 
-                          onClick={handleConnectWallet} 
-                          className="bg-remida-teal hover:bg-remida-teal/90 w-full"
-                        >
-                          <Wallet className="mr-2 h-4 w-4" />
-                          Collega il tuo Wallet
-                        </Button>
+                        </div>
                         
-                        <div className="mt-4 text-sm text-center text-gray-500">
-                          <p>ReMida AI supporta i principali wallet crypto e può collegarsi anche ai tuoi conti bancari per una visione completa del tuo patrimonio.</p>
+                        <div className="p-4 border border-blue-100 bg-blue-50 rounded-lg">
+                          <h3 className="font-medium text-lg flex items-center mb-2">
+                            <TrendingUp className="mr-2 h-5 w-5 text-blue-600" />
+                            <span>Investimenti a Lungo Termine</span>
+                          </h3>
+                          <p className="mb-3 text-gray-700">Basato sul tuo profilo, una strategia di DCA (Dollar-Cost Averaging) su Bitcoin ed Ethereum potrebbe essere adatta per il 20-30% del tuo portafoglio.</p>
+                          <div className="flex justify-end">
+                            <Button variant="outline" size="sm">Impara di più</Button>
+                          </div>
+                        </div>
+                        
+                        <div className="p-4 border border-orange-100 bg-orange-50 rounded-lg">
+                          <h3 className="font-medium text-lg flex items-center mb-2">
+                            <BitcoinIcon className="mr-2 h-5 w-5 text-orange-600" />
+                            <span>Diversificazione nel mondo Crypto</span>
+                          </h3>
+                          <p className="mb-3 text-gray-700">Per esplorare opportunità di crescita più elevate, considera di dedicare il 5-10% del portafoglio a progetti crypto innovativi dopo un'attenta ricerca.</p>
+                          <div className="flex justify-end">
+                            <Button variant="outline" size="sm">Impara di più</Button>
+                          </div>
                         </div>
                       </div>
                     </CardContent>
@@ -589,7 +765,7 @@ const Dashboard = () => {
                               >
                                 <XAxis dataKey="month" />
                                 <YAxis />
-                                <Tooltip />
+                                <RechartsTooltip />
                                 <Line type="monotone" dataKey="expected" stroke="#82ca9d" name="Atteso" />
                                 <Line type="monotone" dataKey="optimistic" stroke="#8884d8" name="Ottimistico" />
                                 <Line type="monotone" dataKey="pessimistic" stroke="#ff7300" name="Pessimistico" />
@@ -631,14 +807,6 @@ const Dashboard = () => {
                           </div>
                         ))}
                       </CardContent>
-                      <CardFooter>
-                        <Button 
-                          onClick={handleAddObjective}
-                          className="bg-remida-orange hover:bg-remida-orange/90 w-full"
-                        >
-                          + Nuovo Obiettivo
-                        </Button>
-                      </CardFooter>
                     </Card>
                   )}
                 </div>
@@ -655,17 +823,17 @@ const Dashboard = () => {
                           <label className="block text-sm font-medium mb-2">Nome Obiettivo</label>
                           <Input 
                             placeholder="es. Fondo Emergenza" 
-                            value={newGoalName}
-                            onChange={e => setNewGoalName(e.target.value)}
+                            value={simulationInputs.goalName}
+                            onChange={e => setSimulationInputs(prev => ({...prev, goalName: e.target.value}))}
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium mb-2">Importo Target</label>
+                          <label className="block text-sm font-medium mb-2">Importo Target (€)</label>
                           <Input 
                             placeholder="es. 5000" 
                             type="number" 
-                            value={newGoalAmount}
-                            onChange={e => setNewGoalAmount(e.target.value)}
+                            value={simulationInputs.targetAmount}
+                            onChange={e => setSimulationInputs(prev => ({...prev, targetAmount: parseInt(e.target.value) || 0}))}
                           />
                         </div>
                       </div>
@@ -673,32 +841,81 @@ const Dashboard = () => {
                       <div className="mb-6">
                         <label className="block text-sm font-medium mb-2">Timeframe</label>
                         <div className="grid grid-cols-3 gap-2">
-                          <Button variant="outline">3 mesi</Button>
-                          <Button variant="outline">6 mesi</Button>
-                          <Button variant="outline">1 anno</Button>
-                          <Button variant="outline">2 anni</Button>
-                          <Button variant="outline">5 anni</Button>
-                          <Button variant="outline">Personalizzato</Button>
+                          <Button 
+                            variant={simulationInputs.timeframe === 3 ? "default" : "outline"}
+                            onClick={() => handleSetTimeframe(3)}
+                          >3 mesi</Button>
+                          <Button 
+                            variant={simulationInputs.timeframe === 6 ? "default" : "outline"}
+                            onClick={() => handleSetTimeframe(6)}
+                          >6 mesi</Button>
+                          <Button 
+                            variant={simulationInputs.timeframe === 12 ? "default" : "outline"}
+                            onClick={() => handleSetTimeframe(12)}
+                          >1 anno</Button>
+                          <Button 
+                            variant={simulationInputs.timeframe === 24 ? "default" : "outline"}
+                            onClick={() => handleSetTimeframe(24)}
+                          >2 anni</Button>
+                          <Button 
+                            variant={simulationInputs.timeframe === 60 ? "default" : "outline"}
+                            onClick={() => handleSetTimeframe(60)}
+                          >5 anni</Button>
+                          <Button 
+                            variant={![3,6,12,24,60].includes(simulationInputs.timeframe) ? "default" : "outline"}
+                            onClick={() => {
+                              const input = window.prompt("Inserisci il numero di mesi:", "12");
+                              if (input) {
+                                const months = parseInt(input);
+                                if (!isNaN(months) && months > 0) {
+                                  handleSetTimeframe(months);
+                                }
+                              }
+                            }}
+                          >Personalizzato</Button>
                         </div>
                       </div>
                       
                       <div className="mb-6">
                         <label className="block text-sm font-medium mb-2">Strategia di Risparmio</label>
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="border p-4 rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                        <div className="grid grid-cols-3 gap-3">
+                          <div 
+                            className={`border p-4 rounded-md cursor-pointer hover:bg-gray-50 transition-colors ${
+                              simulationInputs.strategy === 'safe' ? 'border-remida-teal bg-remida-teal/5' : ''
+                            }`}
+                            onClick={() => handleSetStrategy('safe')}
+                          >
                             <div className="flex items-center mb-2">
-                              <Landmark className="h-5 w-5 mr-2 text-blue-500" />
-                              <h4 className="font-medium">Tradizionale</h4>
+                              <Shield className="h-5 w-5 mr-2 text-blue-500" />
+                              <h4 className="font-medium">Sicuro</h4>
                             </div>
-                            <p className="text-sm text-gray-500">Risparmio su conto corrente con un interesse dell'1%</p>
+                            <p className="text-sm text-gray-500">Stablecoin USDT/USDC in staking (3-4%)</p>
                           </div>
                           
-                          <div className="border border-remida-teal p-4 rounded-md cursor-pointer bg-remida-teal/5">
+                          <div 
+                            className={`border p-4 rounded-md cursor-pointer hover:bg-gray-50 transition-colors ${
+                              simulationInputs.strategy === 'mixed' ? 'border-remida-teal bg-remida-teal/5' : ''
+                            }`}
+                            onClick={() => handleSetStrategy('mixed')}
+                          >
                             <div className="flex items-center mb-2">
                               <BitcoinIcon className="h-5 w-5 mr-2 text-orange-500" />
-                              <h4 className="font-medium">Crypto Mix</h4>
+                              <h4 className="font-medium">Misto</h4>
                             </div>
-                            <p className="text-sm text-gray-500">70% USDT staking (5%) + 30% BTC/ETH</p>
+                            <p className="text-sm text-gray-500">70% USDT staking + 30% BTC/ETH (5-6%)</p>
+                          </div>
+                          
+                          <div 
+                            className={`border p-4 rounded-md cursor-pointer hover:bg-gray-50 transition-colors ${
+                              simulationInputs.strategy === 'aggressive' ? 'border-remida-teal bg-remida-teal/5' : ''
+                            }`}
+                            onClick={() => handleSetStrategy('aggressive')}
+                          >
+                            <div className="flex items-center mb-2">
+                              <TrendingUp className="h-5 w-5 mr-2 text-green-500" />
+                              <h4 className="font-medium">Aggressivo</h4>
+                            </div>
+                            <p className="text-sm text-gray-500">50% crypto blue chip, 50% altcoin (8%+)</p>
                           </div>
                         </div>
                       </div>
@@ -708,15 +925,15 @@ const Dashboard = () => {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                           <div className="p-4 bg-gray-50 rounded-md">
                             <h4 className="text-sm font-medium mb-1">Contributo Mensile</h4>
-                            <p className="text-2xl font-bold text-remida-teal">€200</p>
+                            <p className="text-2xl font-bold text-remida-teal">€{simulationResults.monthlyContribution}</p>
                           </div>
                           <div className="p-4 bg-gray-50 rounded-md">
                             <h4 className="text-sm font-medium mb-1">Rendimento Stimato</h4>
-                            <p className="text-2xl font-bold text-green-600">+€126</p>
+                            <p className="text-2xl font-bold text-green-600">+€{simulationResults.totalReturns}</p>
                           </div>
                           <div className="p-4 bg-gray-50 rounded-md">
                             <h4 className="text-sm font-medium mb-1">Totale Finale</h4>
-                            <p className="text-2xl font-bold">€2.526</p>
+                            <p className="text-2xl font-bold">€{simulationResults.finalAmount}</p>
                           </div>
                         </div>
                         
@@ -724,16 +941,16 @@ const Dashboard = () => {
                           <ResponsiveContainer width="100%" height="100%">
                             <BarChart
                               data={[
-                                { month: "Contributi", amount: 2400 },
-                                { month: "Rendimenti", amount: 126 },
-                                { month: "Totale", amount: 2526 }
+                                { month: "Contributi", amount: simulationResults.totalContributions },
+                                { month: "Rendimenti", amount: simulationResults.totalReturns },
+                                { month: "Totale", amount: simulationResults.finalAmount }
                               ]}
                               margin={{ top: 5, right: 20, left: 20, bottom: 5 }}
                             >
                               <CartesianGrid strokeDasharray="3 3" />
                               <XAxis dataKey="month" />
                               <YAxis />
-                              <Tooltip formatter={(value) => `€${value}`} />
+                              <RechartsTooltip formatter={(value) => `€${value}`} />
                               <Bar dataKey="amount" fill="#3b82f6" />
                             </BarChart>
                           </ResponsiveContainer>
@@ -743,6 +960,7 @@ const Dashboard = () => {
                     <CardFooter className="flex flex-col items-stretch">
                       <Button 
                         className="bg-remida-teal hover:bg-remida-teal/90 w-full"
+                        onClick={handleAddObjective}
                       >
                         Crea Questo Obiettivo
                       </Button>
