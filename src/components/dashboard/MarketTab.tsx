@@ -44,27 +44,27 @@ const MarketTab = () => {
   // Dati di notizie statiche
   const marketNews = [
     {
-      title: "EU Passes Stablecoin Regulation",
-      content: "New EU regulations confirm USDT as a compliant stablecoin option for European users, providing stability in the crypto market.",
-      date: "May 7, 2025",
-      tag: "Regulation"
+      title: "L'UE approva la regolamentazione delle stablecoin",
+      content: "Le nuove normative dell'UE confermano USDT come un'opzione stablecoin conforme per gli utenti europei, fornendo stabilità nel mercato crypto.",
+      date: "7 Maggio 2025",
+      tag: "Regolamentazione"
     },
     {
-      title: "Bitcoin Sees 10% Volatility",
-      content: "BTC experienced significant price swings this week. Experts recommend considering stablecoins like USDT as a temporary haven.",
-      date: "May 6, 2025",
-      tag: "Market"
+      title: "Bitcoin registra una volatilità del 10%",
+      content: "BTC ha sperimentato significative oscillazioni di prezzo questa settimana. Gli esperti consigliano di considerare stablecoin come USDT come rifugio temporaneo.",
+      date: "6 Maggio 2025",
+      tag: "Mercato"
     },
     {
-      title: "Staking Rates Increase",
-      content: "Major platforms are increasing USDT staking rewards to attract liquidity. Rates now range from 4.5% to 6% annually.",
-      date: "May 5, 2025",
+      title: "Aumento dei tassi di staking",
+      content: "Le principali piattaforme stanno aumentando le ricompense di staking per USDT per attrarre liquidità. I tassi ora variano dal 4,5% al 6% annuale.",
+      date: "5 Maggio 2025",
       tag: "Staking"
     },
     {
-      title: "DeFi Protocols Adopt USDT",
-      content: "Leading DeFi platforms have expanded USDT integration, offering new opportunities for yield generation and liquidity provision.",
-      date: "May 4, 2025",
+      title: "I protocolli DeFi adottano USDT",
+      content: "Le principali piattaforme DeFi hanno ampliato l'integrazione di USDT, offrendo nuove opportunità per la generazione di rendimenti e la fornitura di liquidità.",
+      date: "4 Maggio 2025",
       tag: "DeFi"
     }
   ];
@@ -134,7 +134,7 @@ const MarketTab = () => {
     <div className="space-y-6">
       <h2 className="text-3xl font-bold flex items-center gap-2">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6"><circle cx="12" cy="12" r="10"></circle><path d="M9 12h6"></path><path d="M11 9h2"></path><path d="M11 15h2"></path></svg>
-        Crypto Market
+        Mercato Crypto
       </h2>
       
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -159,24 +159,24 @@ const MarketTab = () => {
         
         <Card className="bg-yellow-50 border-yellow-200">
           <CardHeader className="pb-2">
-            <CardTitle className="text-lg">Market Alert</CardTitle>
-            <CardDescription>Volatility warning</CardDescription>
+            <CardTitle className="text-lg">Avviso di Mercato</CardTitle>
+            <CardDescription>Avviso di volatilità</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex items-center text-amber-600">
               <AlertTriangle className="h-5 w-5 mr-2" />
-              <span className="font-medium">High volatility today</span>
+              <span className="font-medium">Alta volatilità oggi</span>
             </div>
-            <p className="text-sm mt-1">USDT remains stable at $1.00</p>
+            <p className="text-sm mt-1">USDT rimane stabile a $1,00</p>
           </CardContent>
         </Card>
       </div>
       
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="w-full">
         <TabsList className="grid grid-cols-3 mb-4">
-          <TabsTrigger value="prices">Prices</TabsTrigger>
-          <TabsTrigger value="volatility">Volatility</TabsTrigger>
-          <TabsTrigger value="insights">Market Insights</TabsTrigger>
+          <TabsTrigger value="prices">Prezzi</TabsTrigger>
+          <TabsTrigger value="volatility">Volatilità</TabsTrigger>
+          <TabsTrigger value="insights">Approfondimenti di Mercato</TabsTrigger>
         </TabsList>
         
         <TabsContent value="prices">
@@ -185,8 +185,8 @@ const MarketTab = () => {
               <CardHeader>
                 <div className="flex justify-between items-center">
                   <div>
-                    <CardTitle>Market Prices</CardTitle>
-                    <CardDescription>Real-time cryptocurrency values</CardDescription>
+                    <CardTitle>Prezzi di Mercato</CardTitle>
+                    <CardDescription>Valori delle criptovalute in tempo reale</CardDescription>
                   </div>
                   <div className="flex gap-2">
                     {['24h', '7d', '30d', '90d'].map(time => (
@@ -241,9 +241,9 @@ const MarketTab = () => {
                           </ResponsiveContainer>
                         </div>
                         <div className="grid grid-cols-3 gap-2 mt-2 text-xs text-muted-foreground">
-                          <div>Market Cap: {formatMarketCap(crypto.market_cap)}</div>
-                          <div>24h Vol: {formatMarketCap(crypto.total_volume)}</div>
-                          <div>Supply: {crypto.circulating_supply.toLocaleString()}</div>
+                          <div>Capitalizzazione di Mercato: {formatMarketCap(crypto.market_cap)}</div>
+                          <div>Volume 24h: {formatMarketCap(crypto.total_volume)}</div>
+                          <div>Offerta Circolante: {crypto.circulating_supply.toLocaleString()}</div>
                         </div>
                       </div>
                     ))
@@ -263,8 +263,8 @@ const MarketTab = () => {
         <TabsContent value="volatility">
           <Card>
             <CardHeader>
-              <CardTitle>Volatility Comparison</CardTitle>
-              <CardDescription>Comparing price volatility between assets</CardDescription>
+              <CardTitle>Confronto di Volatilità</CardTitle>
+              <CardDescription>Confronto della volatilità dei prezzi tra gli asset</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-80">
@@ -283,11 +283,11 @@ const MarketTab = () => {
               <div className="mt-4 p-3 bg-blue-50 border border-blue-100 rounded-lg">
                 <h4 className="font-medium text-blue-800 mb-1 flex items-center">
                   <TrendingDown className="h-4 w-4 mr-2" /> 
-                  Volatility Analysis
+                  Analisi della Volatilità
                 </h4>
                 <p className="text-sm text-blue-700">
-                  USDT maintains minimal price volatility (±0.5%) even during market turbulence, 
-                  making it an excellent choice for preserving value during uncertain conditions.
+                  USDT mantiene una volatilità di prezzo minima (±0,5%) anche durante le turbolenze di mercato, 
+                  rendendolo un'ottima scelta per preservare il valore in condizioni di incertezza.
                 </p>
               </div>
             </CardContent>
@@ -299,8 +299,8 @@ const MarketTab = () => {
             <div className="md:col-span-2">
               <Card>
                 <CardHeader>
-                  <CardTitle>Market News</CardTitle>
-                  <CardDescription>Latest updates affecting the crypto market</CardDescription>
+                  <CardTitle>Notizie di Mercato</CardTitle>
+                  <CardDescription>Ultimi aggiornamenti che influenzano il mercato crypto</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
@@ -317,7 +317,7 @@ const MarketTab = () => {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button variant="outline" className="w-full" size="sm">Load more news</Button>
+                  <Button variant="outline" className="w-full" size="sm">Carica altre notizie</Button>
                 </CardFooter>
               </Card>
             </div>
@@ -325,36 +325,36 @@ const MarketTab = () => {
             <div>
               <Card>
                 <CardHeader>
-                  <CardTitle>Quick Market Suggestions</CardTitle>
-                  <CardDescription>Personalized recommendations based on current market conditions</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="p-3 bg-amber-50 border border-amber-100 rounded-lg">
-                      <h4 className="font-medium text-amber-800 mb-1">BTC Volatility Strategy</h4>
-                      <p className="text-sm text-amber-700">
-                        With BTC {cryptoData[0]?.price_change_percentage_24h < 0 ? 'down' : 'up'} {cryptoData[0]?.price_change_percentage_24h ? Math.abs(cryptoData[0]?.price_change_percentage_24h).toFixed(1) : '5.2'}%, consider moving 20% of your BTC to USDT until the market stabilizes.
-                      </p>
-                      <Button size="sm" variant="outline" className="mt-2 w-full border-amber-200 text-amber-700">Review Strategy</Button>
+                  <CardTitle>Suggerimenti Rapidi di Mercato</CardTitle>
+                  <CardDescription>Raccomandazioni personalizzate basate sulle condizioni attuali del mercato</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="p-3 bg-amber-50 border border-amber-100 rounded-lg">
+                        <h4 className="font-medium text-amber-800 mb-1">Strategia di Volatilità BTC</h4>
+                        <p className="text-sm text-amber-700">
+                          Con BTC {cryptoData[0]?.price_change_percentage_24h < 0 ? 'in calo' : 'in aumento'} del {cryptoData[0]?.price_change_percentage_24h ? Math.abs(cryptoData[0]?.price_change_percentage_24h).toFixed(1) : '5.2'}%, considera di spostare il 20% del tuo BTC in USDT fino a quando il mercato non si stabilizza.
+                        </p>
+                        <Button size="sm" variant="outline" className="mt-2 w-full border-amber-200 text-amber-700">Rivedi Strategia</Button>
+                      </div>
+                      
+                      <div className="p-3 bg-green-50 border border-green-100 rounded-lg">
+                        <h4 className="font-medium text-green-800 mb-1">Opportunità di Staking</h4>
+                        <p className="text-sm text-green-700">
+                          Gli attuali tassi di staking di USDT sono ai massimi annuali. Considera di mettere in staking USDT inattivi per ottenere fino al 5% di APY.
+                        </p>
+                        <Button size="sm" variant="outline" className="mt-2 w-full border-green-200 text-green-700">Esplora Staking</Button>
+                      </div>
+                      
+                      <div className="p-3 bg-blue-50 border border-blue-100 rounded-lg">
+                        <h4 className="font-medium text-blue-800 mb-1">Opportunità di DCA</h4>
+                        <p className="text-sm text-blue-700">
+                          Con i prezzi {cryptoData[0]?.price_change_percentage_24h < 0 ? 'in calo' : 'in variazione'}, è un buon momento per implementare una strategia di Dollar-Cost Averaging utilizzando piccole quantità di USDT.
+                        </p>
+                        <Button size="sm" variant="outline" className="mt-2 w-full border-blue-200 text-blue-700">Inizia DCA</Button>
+                      </div>
                     </div>
-                    
-                    <div className="p-3 bg-green-50 border border-green-100 rounded-lg">
-                      <h4 className="font-medium text-green-800 mb-1">Staking Opportunity</h4>
-                      <p className="text-sm text-green-700">
-                        Current USDT staking rates are at yearly highs. Consider staking idle USDT for up to 5% APY.
-                      </p>
-                      <Button size="sm" variant="outline" className="mt-2 w-full border-green-200 text-green-700">Explore Staking</Button>
-                    </div>
-                    
-                    <div className="p-3 bg-blue-50 border border-blue-100 rounded-lg">
-                      <h4 className="font-medium text-blue-800 mb-1">DCA Opportunity</h4>
-                      <p className="text-sm text-blue-700">
-                        With prices {cryptoData[0]?.price_change_percentage_24h < 0 ? 'down' : 'changing'}, it's a good time to implement a Dollar-Cost Averaging strategy using small USDT amounts.
-                      </p>
-                      <Button size="sm" variant="outline" className="mt-2 w-full border-blue-200 text-blue-700">Start DCA</Button>
-                    </div>
-                  </div>
-                </CardContent>
+                  </CardContent>
               </Card>
             </div>
           </div>

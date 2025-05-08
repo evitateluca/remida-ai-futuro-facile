@@ -46,38 +46,38 @@ const UsdtWalletTab = () => {
       name: 'Crypto.com',
       apy: 5,
       minStake: 500,
-      lockupPeriod: '3 months',
+      lockupPeriod: '3 mesi',
       url: 'https://crypto.com'
     },
     {
       name: 'Binance',
       apy: 4.5,
       minStake: 100,
-      lockupPeriod: '30 days',
+      lockupPeriod: '30 giorni',
       url: 'https://binance.com'
     },
     {
-      name: 'Nexo',
+      name: 'Coinbase',
       apy: 6,
       minStake: 1000,
-      lockupPeriod: '6 months',
-      url: 'https://nexo.com'
+      lockupPeriod: '6 mesi',
+      url: 'https://coinbase.com'
     }
   ]);
 
   const monthlyEarningsData = [
-    { month: 'Jan', earnings: 8.33 },
+    { month: 'Gen', earnings: 8.33 },
     { month: 'Feb', earnings: 8.33 },
     { month: 'Mar', earnings: 8.33 },
     { month: 'Apr', earnings: 8.33 },
-    { month: 'May', earnings: 8.33 },
-    { month: 'Jun', earnings: 8.33 },
-    { month: 'Jul', earnings: 8.33 },
-    { month: 'Aug', earnings: 8.33 },
-    { month: 'Sep', earnings: 8.33 },
-    { month: 'Oct', earnings: 8.33 },
+    { month: 'Mag', earnings: 8.33 },
+    { month: 'Giu', earnings: 8.33 },
+    { month: 'Lug', earnings: 8.33 },
+    { month: 'Ago', earnings: 8.33 },
+    { month: 'Set', earnings: 8.33 },
+    { month: 'Ott', earnings: 8.33 },
     { month: 'Nov', earnings: 8.33 },
-    { month: 'Dec', earnings: 8.33 },
+    { month: 'Dic', earnings: 8.33 },
   ];
 
   const totalStaked = stakingPositions.reduce((sum, pos) => sum + pos.amount, 0);
@@ -88,14 +88,14 @@ const UsdtWalletTab = () => {
     <div className="space-y-6">
       <h2 className="text-3xl font-bold flex items-center gap-2">
         <CircleDollarSign className="h-6 w-6" />
-        USDT Wallet & Staking
+        Portafoglio USDT & Staking
       </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle>Total USDT Balance</CardTitle>
-            <CardDescription>All USDT in your wallet</CardDescription>
+            <CardTitle>Saldo totale USDT</CardTitle>
+            <CardDescription>Tutti gli USDT nel tuo wallet</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{usdtBalance.toLocaleString()}€</div>
@@ -104,8 +104,8 @@ const UsdtWalletTab = () => {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle>Total Staked</CardTitle>
-            <CardDescription>USDT in staking positions</CardDescription>
+            <CardTitle>Totale in staking</CardTitle>
+            <CardDescription>Posizioni di USDT in staking</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{totalStaked.toLocaleString()}€</div>
@@ -114,20 +114,20 @@ const UsdtWalletTab = () => {
               className="h-2 mt-2" 
             />
             <p className="text-sm text-muted-foreground mt-2">
-              {((totalStaked / usdtBalance) * 100).toFixed(0)}% of your USDT is staked
+              {((totalStaked / usdtBalance) * 100).toFixed(0)}% dei tuoi USDT sono in staking
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle>Annual Earnings</CardTitle>
-            <CardDescription>Projected yearly interest</CardDescription>
+            <CardTitle>Guadagni annuali</CardTitle>
+            <CardDescription>Interesse annuo previsto</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-green-500">{totalAnnualEarnings.toFixed(2)}€</div>
             <p className="text-sm text-muted-foreground mt-2">
-              {(totalAnnualEarnings / totalStaked * 100).toFixed(2)}% average APY
+              {(totalAnnualEarnings / totalStaked * 100).toFixed(2)}% media APY
             </p>
           </CardContent>
         </Card>
@@ -136,11 +136,11 @@ const UsdtWalletTab = () => {
       {idleUsdt > 0 && (
         <Alert className="bg-yellow-50 text-yellow-800 border-yellow-300">
           <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Idle USDT detected</AlertTitle>
+          <AlertTitle>USDT rilevati inattivi</AlertTitle>
           <AlertDescription>
-            You have {idleUsdt}€ idle in USDT. Stake it on Binance to earn up to 4.5% annually!
+            Hai {idleUsdt}€ inattivi in USDT. Mettili in staking su Binance per guadagnare fino al 4,5% all'anno!
             <Button variant="outline" size="sm" className="ml-2 mt-2 bg-white">
-              Start Staking
+              Inizia lo Staking
             </Button>
           </AlertDescription>
         </Alert>
@@ -148,8 +148,8 @@ const UsdtWalletTab = () => {
 
       <Card>
         <CardHeader>
-          <CardTitle>Staking Positions</CardTitle>
-          <CardDescription>Your active USDT staking positions</CardDescription>
+          <CardTitle>Posizioni di staking</CardTitle>
+          <CardDescription>Le tue posizioni di staking USDT attive</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -163,25 +163,25 @@ const UsdtWalletTab = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="flex justify-between mb-2">
-                    <span className="text-muted-foreground">Amount staked:</span>
+                    <span className="text-muted-foreground">Quantità in staking:</span>
                     <span className="font-medium">{position.amount.toLocaleString()}€</span>
                   </div>
                   <div className="flex justify-between mb-2">
-                    <span className="text-muted-foreground">Total earned:</span>
+                    <span className="text-muted-foreground">Totale guadagnato:</span>
                     <span className="font-medium text-green-500">{position.totalEarned.toLocaleString()}€</span>
                   </div>
                   <div className="flex justify-between mb-2">
-                    <span className="text-muted-foreground">Start date:</span>
+                    <span className="text-muted-foreground">Data di inizio:</span>
                     <span className="font-medium">{position.startDate.toLocaleDateString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Next payout:</span>
+                    <span className="text-muted-foreground">Prossimo payout:</span>
                     <span className="font-medium">{position.nextPayout.toLocaleDateString()}</span>
                   </div>
                 </CardContent>
                 <CardFooter className="flex justify-end gap-2">
-                  <Button variant="outline" size="sm">Withdraw</Button>
-                  <Button variant="outline" size="sm">Add funds</Button>
+                  <Button variant="outline" size="sm">Preleva</Button>
+                  <Button variant="outline" size="sm">Aggiungi fondi</Button>
                 </CardFooter>
               </Card>
             ))}
@@ -192,8 +192,8 @@ const UsdtWalletTab = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Monthly Earnings</CardTitle>
-            <CardDescription>Your USDT staking interest over time</CardDescription>
+            <CardTitle>Guadagni mensili</CardTitle>
+            <CardDescription>Il tuo interesse da staking USDT nel tempo</CardDescription>
           </CardHeader>
           <CardContent className="h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -216,8 +216,8 @@ const UsdtWalletTab = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle>Staking Platform Comparison</CardTitle>
-            <CardDescription>Compare APY rates across platforms</CardDescription>
+            <CardTitle>Confronto delle piattaforme di staking</CardTitle>
+            <CardDescription>Confronta i tassi APY tra le piattaforme</CardDescription>
           </CardHeader>
           <CardContent className="h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -236,7 +236,7 @@ const UsdtWalletTab = () => {
           </CardContent>
           <CardFooter>
             <div className="space-y-4 w-full">
-              <h4 className="text-sm font-medium">Platform Details</h4>
+              <h4 className="text-sm font-medium">Dettaglio piattaforma</h4>
               <div className="grid grid-cols-1 gap-4">
                 {stakingPlatforms.map((platform, index) => (
                   <div key={index} className="flex justify-between items-center">

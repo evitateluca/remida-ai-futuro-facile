@@ -59,13 +59,13 @@ const NotificationsTab = () => {
     {
       id: '1',
       type: 'market',
-      title: 'BTC Price Drop',
-      message: 'BTC dropped 10%! Want to move some funds to USDT for safety?',
+      title: 'Il prezzo di BTC è calato',
+      message: 'Il prezzo di BTC è calato del 10%! Vuoi spostare alcuni fondi in USDT per sicurezza?',
       date: new Date(),
       read: false,
       priority: 'high',
       action: {
-        text: 'Convert to USDT',
+        text: 'Converti in USDT',
         onClick: () => {
           // Handle action
         }
@@ -74,13 +74,13 @@ const NotificationsTab = () => {
     {
       id: '2',
       type: 'goal',
-      title: 'Tokyo Trip Goal',
-      message: '1 month left to your \'Tokyo Trip\' goal. You\'re 200€ short: add 100€ in USDT now!',
+      title: 'Obiettivo viaggio a Tokyo',
+      message: '1 mese rimasto per il tuo obiettivo \'Viaggio a Tokyo\'. Ti mancano 200€: aggiungi 100€ in USDT!',
       date: new Date(Date.now() - 1000 * 60 * 60 * 24),
       read: false,
       priority: 'medium',
       action: {
-        text: 'Add funds',
+        text: 'Aggiungi fondi',
         onClick: () => {
           // Handle action
         }
@@ -89,13 +89,13 @@ const NotificationsTab = () => {
     {
       id: '3',
       type: 'behavior',
-      title: 'Spending Alert',
-      message: 'You spent 50€ on NFTs today. Remember your \'Emergency Fund\' goal: consider putting 50€ in USDT with 5% annual staking!',
+      title: 'Avviso di spesa',
+      message: 'Hai speso 50€ in NFT oggi. Ricorda il tuo obiettivo \'Fondo di Emergenza\': valuta di investire 50€ in USDT con uno staking annuale del 5%!',
       date: new Date(Date.now() - 1000 * 60 * 60 * 48),
       read: true,
       priority: 'low',
       action: {
-        text: 'Stake USDT',
+        text: 'Metti USDT in stake',
         onClick: () => {
           // Handle action
         }
@@ -104,8 +104,8 @@ const NotificationsTab = () => {
     {
       id: '4',
       type: 'staking',
-      title: 'Staking Interest',
-      message: 'Your 1000€ in USDT on Crypto.com generated 4€ in interest this month. Keep it up!',
+      title: 'Interesse di Staking',
+      message: 'I tuoi 1000€ in USDT su Crypto.com hanno generato 4€ di interessi questo mese. Continua così!',
       date: new Date(Date.now() - 1000 * 60 * 60 * 72),
       read: true,
       priority: 'medium'
@@ -172,44 +172,44 @@ const NotificationsTab = () => {
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold flex items-center gap-2">
           <Bell className="h-6 w-6" />
-          Notifications
+          Notifiche
           {unreadCount > 0 && (
             <Badge variant="destructive" className="ml-2">
-              {unreadCount} unread
+              {unreadCount} non lette
             </Badge>
           )}
         </h2>
         <div className="flex gap-4">
           {unreadCount > 0 && (
             <Button variant="outline" size="sm" onClick={markAllAsRead}>
-              Mark all as read
+              Segna tutto come letto
             </Button>
           )}
           <div className="flex gap-2">
             <div>
-              <label htmlFor="sort" className="mr-2 text-sm text-muted-foreground">Sort by:</label>
+              <label htmlFor="sort" className="mr-2 text-sm text-muted-foreground">Ordina per:</label>
               <select 
                 id="sort"
                 value={sortBy} 
                 onChange={(e) => setSortBy(e.target.value as 'date' | 'priority')}
                 className="p-2 border rounded-md"
               >
-                <option value="date">Date</option>
-                <option value="priority">Priority</option>
+                <option value="date">Data</option>
+                <option value="priority">Priorità</option>
               </select>
             </div>
             <div>
-              <label htmlFor="filter" className="mr-2 text-sm text-muted-foreground">Filter:</label>
+              <label htmlFor="filter" className="mr-2 text-sm text-muted-foreground">Filtra:</label>
               <select 
                 id="filter"
                 value={filterType} 
                 onChange={(e) => setFilterType(e.target.value as NotificationType | 'all')}
                 className="p-2 border rounded-md"
               >
-                <option value="all">All</option>
-                <option value="market">Market</option>
-                <option value="goal">Goals</option>
-                <option value="behavior">Behavior</option>
+                <option value="all">Tutto</option>
+                <option value="market">Mercato</option>
+                <option value="goal">Obiettivi</option>
+                <option value="behavior">Comportamento</option>
                 <option value="staking">Staking</option>
               </select>
             </div>
@@ -258,7 +258,7 @@ const NotificationsTab = () => {
                         size="sm" 
                         onClick={() => markAsRead(notification.id)}
                       >
-                        Mark as read
+                        Segna come letto
                       </Button>
                     )}
                     {notification.action && (

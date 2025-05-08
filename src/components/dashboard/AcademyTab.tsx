@@ -318,7 +318,7 @@ const AcademyTab = () => {
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div>
-                    <CardTitle>ReMida Certified Advisor</CardTitle>
+                    <CardTitle>ReMida Certified Expert</CardTitle>
                     <CardDescription>Certificazione di eccellenza</CardDescription>
                   </div>
                   <div className="bg-gradient-to-r from-orange-300 to-yellow-300 rounded-full p-2">
@@ -328,7 +328,7 @@ const AcademyTab = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-700 mb-4">
-                  Diventa un consulente finanziario certificato ReMida completando tutti i corsi principali e superando l'esame finale.
+                  Diventa un esperto in crypto certificato ReMida completando tutti i corsi principali e superando l'esame finale.
                 </p>
                 <div className="p-3 bg-white/70 rounded-md text-sm">
                   <p className="font-medium mb-1">Sblocca l'accesso:</p>

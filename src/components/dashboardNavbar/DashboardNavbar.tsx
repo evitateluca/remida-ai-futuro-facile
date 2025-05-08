@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
+import NotificationsTab from '@/components/dashboard/NotificationsTab';
 
 type LanguageOption = 'it' | 'en';
 
