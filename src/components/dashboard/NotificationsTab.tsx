@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 
 // Define notification types
 type NotificationType = 'market' | 'goal' | 'behavior' | 'staking';
-type NotificationPriority = 'high' | 'medium' | 'low';
+type NotificationPriority = 'alta' | 'media' | 'bassa';
 
 interface Notification {
   id: string;
@@ -63,7 +63,7 @@ const NotificationsTab = () => {
       message: 'Il prezzo di BTC è calato del 10%! Vuoi spostare alcuni fondi in USDT per sicurezza?',
       date: new Date(),
       read: false,
-      priority: 'high',
+      priority: 'alta',
       action: {
         text: 'Converti in USDT',
         onClick: () => {
@@ -78,7 +78,7 @@ const NotificationsTab = () => {
       message: '1 mese rimasto per il tuo obiettivo \'Viaggio a Tokyo\'. Ti mancano 200€: aggiungi 100€ in USDT!',
       date: new Date(Date.now() - 1000 * 60 * 60 * 24),
       read: false,
-      priority: 'medium',
+      priority: 'media',
       action: {
         text: 'Aggiungi fondi',
         onClick: () => {
@@ -93,7 +93,7 @@ const NotificationsTab = () => {
       message: 'Hai speso 50€ in NFT oggi. Ricorda il tuo obiettivo \'Fondo di Emergenza\': valuta di investire 50€ in USDT con uno staking annuale del 5%!',
       date: new Date(Date.now() - 1000 * 60 * 60 * 48),
       read: true,
-      priority: 'low',
+      priority: 'bassa',
       action: {
         text: 'Metti USDT in stake',
         onClick: () => {
@@ -108,7 +108,7 @@ const NotificationsTab = () => {
       message: 'I tuoi 1000€ in USDT su Crypto.com hanno generato 4€ di interessi questo mese. Continua così!',
       date: new Date(Date.now() - 1000 * 60 * 60 * 72),
       read: true,
-      priority: 'medium'
+      priority: 'media'
     }
   ]);
 
@@ -249,7 +249,7 @@ const NotificationsTab = () => {
                     notification.priority === 'high' ? 'destructive' :
                     notification.priority === 'medium' ? 'default' : 'outline'
                   }>
-                    {notification.priority.charAt(0).toUpperCase() + notification.priority.slice(1)} priority
+                    {notification.priority.charAt(0).toUpperCase() + notification.priority.slice(1)} priorità
                   </Badge>
                   <div className="space-x-2">
                     {!notification.read && (
