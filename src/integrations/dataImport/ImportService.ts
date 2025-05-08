@@ -96,8 +96,8 @@ export const getUserAssets = async (userId: string): Promise<AssetData[]> => {
       symbol: item.symbol,
       amount: item.amount,
       value: item.value,
-      type: item.type,
-      source: item.source,
+      type: item.type as 'crypto' | 'fiat' | 'stock' | 'other',
+      source: item.source as 'coinbase' | 'wallet' | 'csv' | 'manual',
       userId: item.user_id,
       lastUpdated: new Date(item.last_updated)
     }));
@@ -122,13 +122,13 @@ export const getUserTransactions = async (userId: string): Promise<TransactionDa
     
     return data.map(item => ({
       id: item.id,
-      type: item.type,
+      type: item.type as 'buy' | 'sell' | 'transfer' | 'income' | 'expense',
       asset: item.asset,
       amount: item.amount,
       price: item.price,
       date: new Date(item.date),
       userId: item.user_id,
-      source: item.source,
+      source: item.source as 'coinbase' | 'wallet' | 'csv' | 'manual',
     }));
   } catch (error) {
     console.error('Error fetching user transactions:', error);
