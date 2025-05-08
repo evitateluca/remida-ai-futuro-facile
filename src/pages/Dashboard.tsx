@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -327,7 +326,7 @@ const Dashboard = () => {
       description: "I tuoi dati finanziari sono stati importati con successo!",
     });
   };
-  
+
   if (loading || isLoading) {
     return (
       <Layout>
@@ -427,7 +426,7 @@ const Dashboard = () => {
                       </SidebarMenuItem>
                       <SidebarMenuItem>
                         <SidebarMenuButton 
-                          onClick={() => setActiveTab('notifications')}
+                          onClick={()={() => setActiveTab('notifications')}
                           isActive={activeTab === 'notifications'}
                           tooltip="Notifications"
                         >
