@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Layout from '@/components/Layout';
@@ -5,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Plus,
-  BitcoinIcon,
+  Bitcoin as BitcoinIcon,
   LayoutDashboard,
   Wallet,
   LineChart,
@@ -426,7 +427,7 @@ const Dashboard = () => {
                       </SidebarMenuItem>
                       <SidebarMenuItem>
                         <SidebarMenuButton 
-                          onClick={()={() => setActiveTab('notifications')}
+                          onClick={() => setActiveTab('notifications')}
                           isActive={activeTab === 'notifications'}
                           tooltip="Notifications"
                         >
