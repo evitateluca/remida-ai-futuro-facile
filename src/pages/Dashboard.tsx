@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Plus,
-  Bitcoin as BitcoinIcon,
+  Bitcoin,
   LayoutDashboard,
   Wallet,
   LineChart,
@@ -330,174 +330,171 @@ const Dashboard = () => {
 
   if (loading || isLoading) {
     return (
-      <Layout>
-        <div className="flex justify-center items-center h-[60vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-remida-teal"></div>
-        </div>
-      </Layout>
+      <div className="flex justify-center items-center h-[60vh]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-remida-teal"></div>
+      </div>
     );
   }
 
   return (
-    <Layout>
-      {/* Hero Section */}
-      <section className="bg-remida-teal text-white py-10">
-        <div className="container-custom">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-bold mb-2">Benvenuto {profileData?.full_name || profileData?.username || 'alla tua Dashboard'}</h1>
-              <p className="text-lg">La tua panoramica finanziaria completa</p>
-            </div>
-            <div className="mt-4 md:mt-0 flex flex-col items-center">
-              <div className="bg-white text-remida-teal rounded-full p-3 mb-1">
-                <BitcoinIcon size={36} />
-              </div>
-              <span className="text-xl font-bold">Livello {userLevel}</span>
-              <div className="w-full bg-white/20 rounded-full h-2.5 mt-2">
-                <div className="bg-remida-orange h-2.5 rounded-full" style={{ width: `${(userPoints/nextLevelPoints)*100}%` }}></div>
-              </div>
-              <span className="text-sm mt-1">{userPoints}/{nextLevelPoints} punti</span>
-            </div>
-          </div>
-        </div>
-      </section>
+    <div className="min-h-screen bg-gray-50">
+      <div className="container-custom py-6">
+        {/* Integration Manager Dialog */}
+        <Dialog open={showIntegrationManager} onOpenChange={setShowIntegrationManager}>
+          <DialogContent className="max-w-4xl">
+            <DialogHeader>
+              <DialogTitle>Gestione Integrazioni</DialogTitle>
+              <DialogDescription>
+                Collega i tuoi conti e servizi finanziari per visualizzarli in un'unica dashboard
+              </DialogDescription>
+            </DialogHeader>
+            <IntegrationManager 
+              userId={user?.id || ''} 
+              onClose={() => setShowIntegrationManager(false)}
+              onDataImported={handleDataImported}
+            />
+          </DialogContent>
+        </Dialog>
 
-      {/* Dashboard Content */}
-      <section className="py-6">
-        <div className="container-custom">
-          {/* Integration Manager Dialog */}
-          <Dialog open={showIntegrationManager} onOpenChange={setShowIntegrationManager}>
-            <DialogContent className="max-w-4xl">
-              <DialogHeader>
-                <DialogTitle>Gestione Integrazioni</DialogTitle>
-                <DialogDescription>
-                  Collega i tuoi conti e servizi finanziari per visualizzarli in un'unica dashboard
-                </DialogDescription>
-              </DialogHeader>
-              <IntegrationManager 
-                userId={user?.id || ''} 
-                onClose={() => setShowIntegrationManager(false)}
-                onDataImported={handleDataImported}
-              />
-            </DialogContent>
-          </Dialog>
-
-          <div className="flex">
-            <SidebarProvider>
-              <div className="flex w-full">
-                {/* Sidebar */}
-                <Sidebar variant="sidebar">
-                  <SidebarHeader className="px-4 py-2">
-                    <div className="flex items-center justify-between">
-                      <h2 className="text-xl font-bold">ReMida Finance</h2>
-                      <SidebarTrigger />
-                    </div>
-                  </SidebarHeader>
-                  <SidebarContent>
-                    <SidebarMenu>
-                      <SidebarMenuItem>
-                        <SidebarMenuButton 
-                          onClick={() => setActiveTab('overview')}
-                          isActive={activeTab === 'overview'}
-                          tooltip="Overview"
-                        >
-                          <LayoutDashboard className="mr-2" />
-                          <span>Panoramica</span>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                      <SidebarMenuItem>
-                        <SidebarMenuButton 
-                          onClick={() => setActiveTab('portfolio')}
-                          isActive={activeTab === 'portfolio'}
-                          tooltip="Portfolio"
-                        >
-                          <Wallet className="mr-2" />
-                          <span>Patrimonio</span>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                      <SidebarMenuItem>
-                        <SidebarMenuButton 
-                          onClick={() => setActiveTab('planning')}
-                          isActive={activeTab === 'planning'}
-                          tooltip="Planning"
-                        >
-                          <LineChart className="mr-2" />
-                          <span>Pianificazione</span>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                      <SidebarMenuItem>
-                        <SidebarMenuButton 
-                          onClick={() => setActiveTab('notifications')}
-                          isActive={activeTab === 'notifications'}
-                          tooltip="Notifications"
-                        >
-                          <Bell className="mr-2" />
-                          <span>Notifiche</span>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                      <SidebarMenuItem>
-                        <SidebarMenuButton 
-                          onClick={() => setActiveTab('usdt')}
-                          isActive={activeTab === 'usdt'}
-                          tooltip="USDT Wallet"
-                        >
-                          <CircleDollarSign className="mr-2" />
-                          <span>USDT Wallet</span>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                      <SidebarMenuItem>
-                        <SidebarMenuButton 
-                          onClick={() => setActiveTab('market')}
-                          isActive={activeTab === 'market'}
-                          tooltip="Market"
-                        >
-                          <BitcoinIcon className="mr-2" />
-                          <span>Mercato Crypto</span>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                      <SidebarMenuItem>
-                        <SidebarMenuButton 
-                          onClick={() => setActiveTab('chatai')}
-                          isActive={activeTab === 'chatai'}
-                          tooltip="Chat AI"
-                        >
-                          <MessageSquare className="mr-2" />
-                          <span>Chat AI</span>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                      <SidebarMenuItem>
-                        <SidebarMenuButton 
-                          onClick={() => setActiveTab('academy')}
-                          isActive={activeTab === 'academy'}
-                          tooltip="Academy"
-                        >
-                          <BookOpen className="mr-2" />
-                          <span>Academy</span>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    </SidebarMenu>
-                  </SidebarContent>
-                  <SidebarFooter>
-                    <Button 
-                      className="w-full bg-remida-teal hover:bg-remida-teal/90"
-                      onClick={() => setShowIntegrationManager(true)}
-                    >
-                      <Plus size={16} className="mr-2" />
-                      Collega Dati
-                    </Button>
-                  </SidebarFooter>
-                </Sidebar>
-
-                {/* Main Content */}
-                <div className="flex-1 p-6">
-                  <div className="mb-4 md:hidden">
-                    <Button variant="outline" size="sm" className="flex items-center gap-2">
-                      <Menu size={16} />
-                      <span>Menu</span>
-                    </Button>
+        <div className="flex">
+          <SidebarProvider>
+            <div className="flex w-full">
+              {/* Sidebar */}
+              <Sidebar variant="sidebar">
+                <SidebarHeader className="px-4 py-2">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-bold">ReMida Finance</h2>
+                    <SidebarTrigger />
                   </div>
-                  
-                  {activeTab === 'overview' && (
+                </SidebarHeader>
+                <SidebarContent>
+                  <SidebarMenu>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton 
+                        onClick={() => setActiveTab('overview')}
+                        isActive={activeTab === 'overview'}
+                        tooltip="Overview"
+                      >
+                        <LayoutDashboard className="mr-2" />
+                        <span>Panoramica</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton 
+                        onClick={() => setActiveTab('portfolio')}
+                        isActive={activeTab === 'portfolio'}
+                        tooltip="Portfolio"
+                      >
+                        <Wallet className="mr-2" />
+                        <span>Patrimonio</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton 
+                        onClick={() => setActiveTab('planning')}
+                        isActive={activeTab === 'planning'}
+                        tooltip="Planning"
+                      >
+                        <LineChart className="mr-2" />
+                        <span>Pianificazione</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton 
+                        onClick={() => setActiveTab('notifications')}
+                        isActive={activeTab === 'notifications'}
+                        tooltip="Notifications"
+                      >
+                        <Bell className="mr-2" />
+                        <span>Notifiche</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton 
+                        onClick={() => setActiveTab('usdt')}
+                        isActive={activeTab === 'usdt'}
+                        tooltip="USDT Wallet"
+                      >
+                        <CircleDollarSign className="mr-2" />
+                        <span>USDT Wallet</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton 
+                        onClick={() => setActiveTab('market')}
+                        isActive={activeTab === 'market'}
+                        tooltip="Market"
+                      >
+                        <Bitcoin className="mr-2" />
+                        <span>Mercato Crypto</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton 
+                        onClick={() => setActiveTab('chatai')}
+                        isActive={activeTab === 'chatai'}
+                        tooltip="Chat AI"
+                      >
+                        <MessageSquare className="mr-2" />
+                        <span>Chat AI</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                    <SidebarMenuItem>
+                      <SidebarMenuButton 
+                        onClick={() => setActiveTab('academy')}
+                        isActive={activeTab === 'academy'}
+                        tooltip="Academy"
+                      >
+                        <BookOpen className="mr-2" />
+                        <span>Academy</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  </SidebarMenu>
+                </SidebarContent>
+                <SidebarFooter>
+                  <Button 
+                    className="w-full bg-remida-teal hover:bg-remida-teal/90"
+                    onClick={() => setShowIntegrationManager(true)}
+                  >
+                    <Plus size={16} className="mr-2" />
+                    Collega Dati
+                  </Button>
+                </SidebarFooter>
+              </Sidebar>
+
+              {/* Main Content */}
+              <div className="flex-1 p-6">
+                <div className="mb-4 md:hidden">
+                  <Button variant="outline" size="sm" className="flex items-center gap-2">
+                    <Menu size={16} />
+                    <span>Menu</span>
+                  </Button>
+                </div>
+                
+                {activeTab === 'overview' && (
+                  <>
+                    {/* Hero Section/Banner (solo nella scheda Panoramica) */}
+                    <section className="bg-remida-teal text-white py-10 mb-6 rounded-lg">
+                      <div className="container-custom">
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+                          <div>
+                            <h1 className="text-3xl md:text-4xl font-bold mb-2">Benvenuto {profileData?.full_name || profileData?.username || 'alla tua Dashboard'}</h1>
+                            <p className="text-lg">La tua panoramica finanziaria completa</p>
+                          </div>
+                          <div className="mt-4 md:mt-0 flex flex-col items-center">
+                            <div className="bg-white text-remida-teal rounded-full p-3 mb-1">
+                              <Bitcoin size={36} />
+                            </div>
+                            <span className="text-xl font-bold">Livello {userLevel}</span>
+                            <div className="w-full bg-white/20 rounded-full h-2.5 mt-2">
+                              <div className="bg-remida-orange h-2.5 rounded-full" style={{ width: `${(userPoints/nextLevelPoints)*100}%` }}></div>
+                            </div>
+                            <span className="text-sm mt-1">{userPoints}/{nextLevelPoints} punti</span>
+                          </div>
+                        </div>
+                      </div>
+                    </section>
+
                     <OverviewTab
                       totalPortfolioValue={totalPortfolioValue}
                       portfolioData={portfolioData}
@@ -506,59 +503,59 @@ const Dashboard = () => {
                       moneyDials={moneyDials}
                       onShowIntegrationManager={() => setShowIntegrationManager(true)}
                     />
-                  )}
-                  
-                  {activeTab === 'portfolio' && (
-                    <PortfolioTab
-                      userId={user?.id || ''}
-                      refreshTrigger={refreshTrigger}
-                      moneyDials={moneyDials}
-                    />
-                  )}
-                  
-                  {activeTab === 'planning' && (
-                    <PlanningTab
-                      objectives={objectives}
-                      savingsProjection={savingsProjection}
-                      simulationInputs={simulationInputs}
-                      setSimulationInputs={setSimulationInputs}
-                      simulationResults={simulationResults}
-                    />
-                  )}
-                  
-                  {activeTab === 'chatai' && (
-                    <ChatAITab
-                      chatMessages={chatMessages}
-                      setChatMessages={setChatMessages}
-                      aiResponses={aiResponses}
-                      newMessage={newMessage}
-                      setNewMessage={setNewMessage}
-                      handleSendMessage={handleSendMessage}
-                    />
-                  )}
-                  
-                  {activeTab === 'academy' && (
-                    <AcademyTab />
-                  )}
-                  
-                  {activeTab === 'notifications' && (
-                    <NotificationsTab />
-                  )}
-                  
-                  {activeTab === 'usdt' && (
-                    <UsdtWalletTab />
-                  )}
-                  
-                  {activeTab === 'market' && (
-                    <MarketTab />
-                  )}
-                </div>
+                  </>
+                )}
+                
+                {activeTab === 'portfolio' && (
+                  <PortfolioTab
+                    userId={user?.id || ''}
+                    refreshTrigger={refreshTrigger}
+                    moneyDials={moneyDials}
+                  />
+                )}
+                
+                {activeTab === 'planning' && (
+                  <PlanningTab
+                    objectives={objectives}
+                    savingsProjection={savingsProjection}
+                    simulationInputs={simulationInputs}
+                    setSimulationInputs={setSimulationInputs}
+                    simulationResults={simulationResults}
+                  />
+                )}
+                
+                {activeTab === 'chatai' && (
+                  <ChatAITab
+                    chatMessages={chatMessages}
+                    setChatMessages={setChatMessages}
+                    aiResponses={aiResponses}
+                    newMessage={newMessage}
+                    setNewMessage={setNewMessage}
+                    handleSendMessage={handleSendMessage}
+                  />
+                )}
+                
+                {activeTab === 'academy' && (
+                  <AcademyTab />
+                )}
+                
+                {activeTab === 'notifications' && (
+                  <NotificationsTab />
+                )}
+                
+                {activeTab === 'usdt' && (
+                  <UsdtWalletTab />
+                )}
+                
+                {activeTab === 'market' && (
+                  <MarketTab />
+                )}
               </div>
-            </SidebarProvider>
-          </div>
+            </div>
+          </SidebarProvider>
         </div>
-      </section>
-    </Layout>
+      </div>
+    </div>
   );
 };
 
