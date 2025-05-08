@@ -158,7 +158,7 @@ const UsdtWalletTab = () => {
                 <CardHeader className="pb-2">
                   <div className="flex justify-between">
                     <CardTitle>{position.platform}</CardTitle>
-                    <Badge>{position.apy}% APY</Badge>
+                    <Badge variant="default">{position.apy}% APY</Badge>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -264,11 +264,5 @@ const UsdtWalletTab = () => {
     </div>
   );
 };
-
-const Badge = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
-  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 ${className}`}>
-    {children}
-  </span>
-);
 
 export default UsdtWalletTab;
