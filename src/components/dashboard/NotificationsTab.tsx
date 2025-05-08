@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -23,6 +22,36 @@ interface Notification {
     onClick: () => void;
   };
 }
+
+// Event emitter for notifications
+const notificationEvents = {
+  listeners: new Map<string, Function[]>(),
+  
+  subscribe: (event: string, callback: Function) => {
+    if (!notificationEvents.listeners.has(event)) {
+      notificationEvents.listeners.set(event, []);
+    }
+    notificationEvents.listeners.get(event)!.push(callback);
+    return () => {
+      const eventListeners = notificationEvents.listeners.get(event);
+      if (eventListeners) {
+        const index = eventListeners.indexOf(callback);
+        if (index > -1) {
+          eventListeners.splice(index, 1);
+        }
+      }
+    };
+  },
+  
+  emit: (event: string, data?: any) => {
+    if (notificationEvents.listeners.has(event)) {
+      notificationEvents.listeners.get(event)!.forEach(callback => callback(data));
+    }
+  }
+};
+
+// Export event emitter
+export { notificationEvents };
 
 const NotificationsTab = () => {
   // Sample notifications data
@@ -98,9 +127,23 @@ const NotificationsTab = () => {
 
   // Mark notification as read
   const markAsRead = (id: string) => {
-    setNotifications(prev => prev.map(notif => 
+    const updatedNotifications = notifications.map(notif => 
       notif.id === id ? { ...notif, read: true } : notif
-    ));
+    );
+    setNotifications(updatedNotifications);
+    
+    // Emit event for updating the unread count
+    const unreadCount = updatedNotifications.filter(n => !n.read).length;
+    notificationEvents.emit('unread-count-changed', unreadCount);
+  };
+
+  // Mark all as read
+  const markAllAsRead = () => {
+    const updatedNotifications = notifications.map(notif => ({ ...notif, read: true }));
+    setNotifications(updatedNotifications);
+    
+    // Emit event for updating the unread count to zero
+    notificationEvents.emit('unread-count-changed', 0);
   };
 
   // Get icon based on notification type
@@ -119,6 +162,11 @@ const NotificationsTab = () => {
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
+  // When component mounts, emit the initial unread count
+  useEffect(() => {
+    notificationEvents.emit('unread-count-changed', unreadCount);
+  }, []);
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -131,33 +179,40 @@ const NotificationsTab = () => {
             </Badge>
           )}
         </h2>
-        <div className="flex gap-2">
-          <div>
-            <label htmlFor="sort" className="mr-2 text-sm text-muted-foreground">Sort by:</label>
-            <select 
-              id="sort"
-              value={sortBy} 
-              onChange={(e) => setSortBy(e.target.value as 'date' | 'priority')}
-              className="p-2 border rounded-md"
-            >
-              <option value="date">Date</option>
-              <option value="priority">Priority</option>
-            </select>
-          </div>
-          <div>
-            <label htmlFor="filter" className="mr-2 text-sm text-muted-foreground">Filter:</label>
-            <select 
-              id="filter"
-              value={filterType} 
-              onChange={(e) => setFilterType(e.target.value as NotificationType | 'all')}
-              className="p-2 border rounded-md"
-            >
-              <option value="all">All</option>
-              <option value="market">Market</option>
-              <option value="goal">Goals</option>
-              <option value="behavior">Behavior</option>
-              <option value="staking">Staking</option>
-            </select>
+        <div className="flex gap-4">
+          {unreadCount > 0 && (
+            <Button variant="outline" size="sm" onClick={markAllAsRead}>
+              Mark all as read
+            </Button>
+          )}
+          <div className="flex gap-2">
+            <div>
+              <label htmlFor="sort" className="mr-2 text-sm text-muted-foreground">Sort by:</label>
+              <select 
+                id="sort"
+                value={sortBy} 
+                onChange={(e) => setSortBy(e.target.value as 'date' | 'priority')}
+                className="p-2 border rounded-md"
+              >
+                <option value="date">Date</option>
+                <option value="priority">Priority</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="filter" className="mr-2 text-sm text-muted-foreground">Filter:</label>
+              <select 
+                id="filter"
+                value={filterType} 
+                onChange={(e) => setFilterType(e.target.value as NotificationType | 'all')}
+                className="p-2 border rounded-md"
+              >
+                <option value="all">All</option>
+                <option value="market">Market</option>
+                <option value="goal">Goals</option>
+                <option value="behavior">Behavior</option>
+                <option value="staking">Staking</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
