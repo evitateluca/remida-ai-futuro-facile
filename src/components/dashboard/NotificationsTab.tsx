@@ -246,8 +246,8 @@ const NotificationsTab = () => {
                 <p className="mb-4">{notification.message}</p>
                 <div className="flex justify-between items-center">
                   <Badge variant={
-                    notification.priority === 'high' ? 'destructive' :
-                    notification.priority === 'medium' ? 'default' : 'outline'
+                    notification.priority === 'alta' ? 'destructive' :
+                    notification.priority === 'media' ? 'default' : 'outline'
                   }>
                     {notification.priority.charAt(0).toUpperCase() + notification.priority.slice(1)} priorità
                   </Badge>
