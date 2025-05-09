@@ -1,9 +1,11 @@
+
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Bell, AlertTriangle, Target, TrendingDown, CreditCard } from 'lucide-react';
 import { format } from 'date-fns';
+import { useTranslation } from '@/contexts/TranslationContext';
 
 // Define notification types
 type NotificationType = 'market' | 'goal' | 'behavior' | 'staking';
@@ -54,6 +56,7 @@ const notificationEvents = {
 export { notificationEvents };
 
 const NotificationsTab = () => {
+  const { t, language } = useTranslation();
   // Sample notifications data
   const [notifications, setNotifications] = useState<Notification[]>([
     {
@@ -167,50 +170,64 @@ const NotificationsTab = () => {
     notificationEvents.emit('unread-count-changed', unreadCount);
   }, []);
 
+  // Get priority text based on priority level
+  const getPriorityText = (priority: NotificationPriority) => {
+    switch (priority) {
+      case 'alta':
+        return t('high_priority');
+      case 'media':
+        return t('medium_priority');
+      case 'bassa':
+        return t('low_priority');
+      default:
+        return priority;
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-3xl font-bold flex items-center gap-2">
           <Bell className="h-6 w-6" />
-          Notifiche
+          {t('notifications')}
           {unreadCount > 0 && (
             <Badge variant="destructive" className="ml-2">
-              {unreadCount} non lette
+              {unreadCount} {language === 'it' ? 'non lette' : 'unread'}
             </Badge>
           )}
         </h2>
         <div className="flex gap-4">
           {unreadCount > 0 && (
             <Button variant="outline" size="sm" onClick={markAllAsRead}>
-              Segna tutto come letto
+              {t('mark_all_as_read')}
             </Button>
           )}
           <div className="flex gap-2">
             <div>
-              <label htmlFor="sort" className="mr-2 text-sm text-muted-foreground">Ordina per:</label>
+              <label htmlFor="sort" className="mr-2 text-sm text-muted-foreground">{t('sort_by')}:</label>
               <select 
                 id="sort"
                 value={sortBy} 
                 onChange={(e) => setSortBy(e.target.value as 'date' | 'priority')}
                 className="p-2 border rounded-md"
               >
-                <option value="date">Data</option>
-                <option value="priority">Priorità</option>
+                <option value="date">{t('date')}</option>
+                <option value="priority">{t('priority')}</option>
               </select>
             </div>
             <div>
-              <label htmlFor="filter" className="mr-2 text-sm text-muted-foreground">Filtra:</label>
+              <label htmlFor="filter" className="mr-2 text-sm text-muted-foreground">{t('filter')}:</label>
               <select 
                 id="filter"
                 value={filterType} 
                 onChange={(e) => setFilterType(e.target.value as NotificationType | 'all')}
                 className="p-2 border rounded-md"
               >
-                <option value="all">Tutto</option>
-                <option value="market">Mercato</option>
-                <option value="goal">Obiettivi</option>
-                <option value="behavior">Comportamento</option>
-                <option value="staking">Staking</option>
+                <option value="all">{t('all')}</option>
+                <option value="market">{t('market')}</option>
+                <option value="goal">{t('goals')}</option>
+                <option value="behavior">{t('behavior')}</option>
+                <option value="staking">{t('staking')}</option>
               </select>
             </div>
           </div>
@@ -221,7 +238,7 @@ const NotificationsTab = () => {
         {sortedNotifications.length === 0 ? (
           <Card>
             <CardContent className="pt-6 text-center text-muted-foreground">
-              No notifications to display
+              {t('no_notifications_display')}
             </CardContent>
           </Card>
         ) : (
@@ -249,7 +266,7 @@ const NotificationsTab = () => {
                     notification.priority === 'alta' ? 'destructive' :
                     notification.priority === 'media' ? 'default' : 'outline'
                   }>
-                    {notification.priority.charAt(0).toUpperCase() + notification.priority.slice(1)} priorità
+                    {getPriorityText(notification.priority)}
                   </Badge>
                   <div className="space-x-2">
                     {!notification.read && (
@@ -258,7 +275,7 @@ const NotificationsTab = () => {
                         size="sm" 
                         onClick={() => markAsRead(notification.id)}
                       >
-                        Segna come letto
+                        {t('mark_as_read')}
                       </Button>
                     )}
                     {notification.action && (

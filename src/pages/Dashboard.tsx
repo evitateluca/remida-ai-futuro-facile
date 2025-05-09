@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation } from '@/contexts/TranslationContext';
 import { supabase } from '@/integrations/supabase/client';
 import {
   Plus,
@@ -49,6 +50,7 @@ import { notificationEvents } from '@/components/dashboard/NotificationsTab';
 
 const Dashboard = () => {
   const { user, loading } = useAuth();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [profileData, setProfileData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -331,7 +333,6 @@ const Dashboard = () => {
   };
 
   const [unreadNotifications, setUnreadNotifications] = useState(0);
-  const [currentLanguage, setCurrentLanguage] = useState<'it' | 'en'>('it');
   
   // Subscribe to notification count changes
   useEffect(() => {
@@ -347,13 +348,6 @@ const Dashboard = () => {
     
     return () => unsubscribe();
   }, []);
-
-  const handleLanguageChange = (lang: 'it' | 'en') => {
-    setCurrentLanguage(lang);
-    // Here you would implement actual language change logic
-    console.log(`Language changed to: ${lang}`);
-    // Example: i18n.changeLanguage(lang);
-  };
 
   if (loading || isLoading) {
     return (
@@ -386,11 +380,8 @@ const Dashboard = () => {
         <div className="flex">
           <SidebarProvider>
             <div className="flex w-full flex-col">
-              {/* New Dashboard Navbar */}
-              <DashboardNavbar 
-                unreadNotifications={unreadNotifications} 
-                onLanguageChange={handleLanguageChange} 
-              />
+              {/* Dashboard Navbar */}
+              <DashboardNavbar unreadNotifications={unreadNotifications} />
               
               <div className="flex w-full flex-1">
                 {/* Sidebar */}
@@ -407,40 +398,40 @@ const Dashboard = () => {
                         <SidebarMenuButton 
                           onClick={() => setActiveTab('overview')}
                           isActive={activeTab === 'overview'}
-                          tooltip="Overview"
+                          tooltip={t('overview')}
                         >
                           <LayoutDashboard className="mr-2" />
-                          <span>Panoramica</span>
+                          <span>{t('overview')}</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                       <SidebarMenuItem>
                         <SidebarMenuButton 
                           onClick={() => setActiveTab('portfolio')}
                           isActive={activeTab === 'portfolio'}
-                          tooltip="Portfolio"
+                          tooltip={t('portfolio')}
                         >
                           <Wallet className="mr-2" />
-                          <span>Patrimonio</span>
+                          <span>{t('portfolio')}</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                       <SidebarMenuItem>
                         <SidebarMenuButton 
                           onClick={() => setActiveTab('planning')}
                           isActive={activeTab === 'planning'}
-                          tooltip="Planning"
+                          tooltip={t('planning')}
                         >
                           <LineChart className="mr-2" />
-                          <span>Pianificazione</span>
+                          <span>{t('planning')}</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                       <SidebarMenuItem>
                         <SidebarMenuButton 
                           onClick={() => setActiveTab('notifications')}
                           isActive={activeTab === 'notifications'}
-                          tooltip="Notifications"
+                          tooltip={t('notifications')}
                         >
                           <Bell className="mr-2" />
-                          <span>Notifiche</span>
+                          <span>{t('notifications')}</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                       <SidebarMenuItem>
@@ -450,37 +441,37 @@ const Dashboard = () => {
                           tooltip="USDT Wallet"
                         >
                           <CircleDollarSign className="mr-2" />
-                          <span>USDT Wallet</span>
+                          <span>{t('usdt_wallet')}</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                       <SidebarMenuItem>
                         <SidebarMenuButton 
                           onClick={() => setActiveTab('market')}
                           isActive={activeTab === 'market'}
-                          tooltip="Market"
+                          tooltip={t('crypto_market')}
                         >
                           <Bitcoin className="mr-2" />
-                          <span>Mercato Crypto</span>
+                          <span>{t('crypto_market')}</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                       <SidebarMenuItem>
                         <SidebarMenuButton 
                           onClick={() => setActiveTab('chatai')}
                           isActive={activeTab === 'chatai'}
-                          tooltip="Chat AI"
+                          tooltip={t('chat_ai')}
                         >
                           <MessageSquare className="mr-2" />
-                          <span>Chat AI</span>
+                          <span>{t('chat_ai')}</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                       <SidebarMenuItem>
                         <SidebarMenuButton 
                           onClick={() => setActiveTab('academy')}
                           isActive={activeTab === 'academy'}
-                          tooltip="Academy"
+                          tooltip={t('academy')}
                         >
                           <BookOpen className="mr-2" />
-                          <span>Academy</span>
+                          <span>{t('academy')}</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     </SidebarMenu>
@@ -491,7 +482,7 @@ const Dashboard = () => {
                       onClick={() => setShowIntegrationManager(true)}
                     >
                       <Plus size={16} className="mr-2" />
-                      Collega Dati
+                      {t('connect_data')}
                     </Button>
                   </SidebarFooter>
                 </Sidebar>
@@ -501,19 +492,21 @@ const Dashboard = () => {
                   <div className="mb-4 md:hidden">
                     <Button variant="outline" size="sm" className="flex items-center gap-2">
                       <Menu size={16} />
-                      <span>Menu</span>
+                      <span>{t('menu')}</span>
                     </Button>
                   </div>
                   
                   {activeTab === 'overview' && (
                     <>
-                      {/* Hero Section/Banner (solo nella scheda Panoramica) */}
+                      {/* Hero Section/Banner (only in overview tab) */}
                       <section className="bg-remida-teal text-white py-10 mb-6 rounded-lg">
                         <div className="container-custom">
                           <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
                             <div>
-                              <h1 className="text-3xl md:text-4xl font-bold mb-2">Benvenuto {profileData?.full_name || profileData?.username || 'alla tua Dashboard'}</h1>
-                              <p className="text-lg">La tua panoramica finanziaria completa</p>
+                              <h1 className="text-3xl md:text-4xl font-bold mb-2">
+                                {t('welcome')} {profileData?.full_name || profileData?.username || ''}
+                              </h1>
+                              <p className="text-lg">{t('financial_overview')}</p>
                             </div>
                             <div className="mt-4 md:mt-0 flex flex-col items-center">
                               <div className="bg-white text-remida-teal rounded-full p-3 mb-1">

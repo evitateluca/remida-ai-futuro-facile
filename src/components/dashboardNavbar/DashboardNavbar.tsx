@@ -5,6 +5,7 @@ import { Bell, User, LogOut, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslation, Language } from '@/contexts/TranslationContext';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,23 +15,18 @@ import {
 } from '@/components/ui/dropdown-menu';
 import NotificationsTab from '@/components/dashboard/NotificationsTab';
 
-type LanguageOption = 'it' | 'en';
-
 interface DashboardNavbarProps {
   unreadNotifications?: number;
-  onLanguageChange?: (lang: LanguageOption) => void;
 }
 
 const DashboardNavbar = ({ 
-  unreadNotifications = 0, 
-  onLanguageChange = () => {} 
+  unreadNotifications = 0
 }: DashboardNavbarProps) => {
   const { signOut } = useAuth();
-  const [currentLanguage, setCurrentLanguage] = useState<LanguageOption>('it');
+  const { language, changeLanguage, t } = useTranslation();
 
-  const handleLanguageChange = (lang: LanguageOption) => {
-    setCurrentLanguage(lang);
-    onLanguageChange(lang);
+  const handleLanguageChange = (lang: Language) => {
+    changeLanguage(lang);
   };
 
   return (
@@ -51,17 +47,17 @@ const DashboardNavbar = ({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-64">
-          <div className="px-4 py-2 font-medium">Notifiche</div>
+          <div className="px-4 py-2 font-medium">{t('notifications')}</div>
           <DropdownMenuSeparator />
           {unreadNotifications > 0 ? (
             <div className="px-4 py-4">
               <Link to="/dashboard" className="text-blue-500 hover:underline" onClick={() => {}}>
-                Hai {unreadNotifications} notifiche non lette. Visualizza tutto
+                {t('notifications_unread').replace('{count}', unreadNotifications.toString())}
               </Link>
             </div>
           ) : (
             <div className="px-4 py-4 text-muted-foreground">
-              Nessuna nuova notifica
+              {t('no_notifications')}
             </div>
           )}
         </DropdownMenuContent>
@@ -72,18 +68,18 @@ const DashboardNavbar = ({
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" className="flex gap-1 items-center px-2">
             <Globe className="h-5 w-5" />
-            <span className="text-xs font-medium">{currentLanguage.toUpperCase()}</span>
+            <span className="text-xs font-medium">{language.toUpperCase()}</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem 
-            className={currentLanguage === 'it' ? 'bg-muted' : ''} 
+            className={language === 'it' ? 'bg-muted' : ''} 
             onClick={() => handleLanguageChange('it')}
           >
             🇮🇹 Italiano
           </DropdownMenuItem>
           <DropdownMenuItem 
-            className={currentLanguage === 'en' ? 'bg-muted' : ''} 
+            className={language === 'en' ? 'bg-muted' : ''} 
             onClick={() => handleLanguageChange('en')}
           >
             🇬🇧 English
@@ -100,12 +96,12 @@ const DashboardNavbar = ({
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem asChild>
-            <Link to="/profile">Profilo</Link>
+            <Link to="/profile">{t('profile')}</Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => signOut()}>
             <LogOut className="h-4 w-4 mr-2" />
-            Logout
+            {t('logout')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
