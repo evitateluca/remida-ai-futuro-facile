@@ -144,4 +144,17 @@
   .glass-effect {
     @apply bg-white/80 dark:bg-remida-dark/80 backdrop-blur-md border border-gray-200 dark:border-gray-800;
   }
+  
+  /* Add styles for collapsed sidebar icon display */
+  .group-data-\[collapsible\=icon\]:w-\[--sidebar-width-icon\] [data-sidebar="sidebar"] [data-sidebar="menu-button"] {
+    @apply justify-center;
+  }
+  
+  .group-data-\[collapsible\=icon\]:w-\[--sidebar-width-icon\] [data-sidebar="sidebar"] [data-sidebar="menu-button"] span:not(:first-child) {
+    @apply hidden;
+  }
+  
+  .group-data-\[collapsible\=icon\]:w-\[--sidebar-width-icon\] [data-sidebar="sidebar"] [data-sidebar="header"] h2 {
+    @apply hidden;
+  }
 }

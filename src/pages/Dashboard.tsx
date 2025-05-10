@@ -384,8 +384,8 @@ const Dashboard = () => {
               <DashboardNavbar unreadNotifications={unreadNotifications} />
               
               <div className="flex w-full flex-1">
-                {/* Sidebar */}
-                <Sidebar variant="sidebar">
+                {/* Sidebar - explicitly set collapsible to icon mode */}
+                <Sidebar variant="sidebar" collapsible="icon">
                   <SidebarHeader className="px-4 py-2">
                     <div className="flex items-center justify-between">
                       <h2 className="text-xl font-bold">ReMida Finance</h2>
