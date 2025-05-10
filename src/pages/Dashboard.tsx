@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -385,14 +384,11 @@ const Dashboard = () => {
               <DashboardNavbar unreadNotifications={unreadNotifications} />
               
               <div className="flex w-full flex-1">
-                {/* Sidebar - explicitly set collapsible to icon mode */}
-                <Sidebar variant="sidebar" collapsible="icon">
+                {/* Sidebar */}
+                <Sidebar variant="sidebar">
                   <SidebarHeader className="px-4 py-2">
                     <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <Bitcoin className="mr-2 h-6 w-6 sidebar-logo text-remida-teal" />
-                        <h2 className="text-xl font-bold">ReMida Finance</h2>
-                      </div>
+                      <h2 className="text-xl font-bold">ReMida Finance</h2>
                       <SidebarTrigger />
                     </div>
                   </SidebarHeader>

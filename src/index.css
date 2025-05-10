@@ -144,22 +144,4 @@
   .glass-effect {
     @apply bg-white/80 dark:bg-remida-dark/80 backdrop-blur-md border border-gray-200 dark:border-gray-800;
   }
-  
-  /* Improved styles for collapsed sidebar icon display */
-  .group-data-\[collapsible\=icon\]:w-\[--sidebar-width-icon\] [data-sidebar="sidebar"] [data-sidebar="menu-button"] {
-    @apply justify-center;
-  }
-  
-  .group-data-\[collapsible\=icon\]:w-\[--sidebar-width-icon\] [data-sidebar="sidebar"] [data-sidebar="menu-button"] span:not(:first-child) {
-    @apply hidden;
-  }
-  
-  /* Properly hide header text when collapsed but show logo/icon */
-  .group-data-\[state\=collapsed\] [data-sidebar="header"] h2 {
-    @apply hidden;
-  }
-  
-  .group-data-\[state\=collapsed\] [data-sidebar="header"] .sidebar-logo {
-    @apply mx-auto;
-  }
 }
