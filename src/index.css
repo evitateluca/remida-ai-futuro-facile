@@ -35,19 +35,11 @@
 
     --radius: 0.75rem;
 
-    --sidebar-background: var(--background);
-    --sidebar-foreground: var(--foreground);
-    --sidebar-primary: var(--primary);
-    --sidebar-primary-foreground: var(--primary-foreground);
-    --sidebar-accent: var(--accent);
-    --sidebar-accent-foreground: var(--accent-foreground);
-    --sidebar-border: var(--border);
-    --sidebar-ring: var(--ring);
-
     .bg-sidebar {
       background-color: hsl(var(--background));
       color: hsl(var(--foreground));
     }
+
   }
 
   .dark {
@@ -78,15 +70,6 @@
     --border: 217 33% 25%;
     --input: 217 33% 25%;
     --ring: 184 100% 38%;
-    
-    --sidebar-background: var(--background);
-    --sidebar-foreground: var(--foreground);
-    --sidebar-primary: var(--primary);
-    --sidebar-primary-foreground: var(--primary-foreground);
-    --sidebar-accent: var(--accent);
-    --sidebar-accent-foreground: var(--accent-foreground);
-    --sidebar-border: var(--border);
-    --sidebar-ring: var(--ring);
 
     .bg-sidebar {
       background-color: hsl(var(--background));
@@ -113,6 +96,8 @@
       background-color: hsl(var(--background));
       color: hsl(var(--foreground));
     }
+
+
   }
 }
 
@@ -158,10 +143,5 @@
   
   .glass-effect {
     @apply bg-white/80 dark:bg-remida-dark/80 backdrop-blur-md border border-gray-200 dark:border-gray-800;
-  }
-  
-  /* Mobile menu styles */
-  .mobile-menu-open {
-    @apply overflow-hidden;
   }
 }
