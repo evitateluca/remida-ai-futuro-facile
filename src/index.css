@@ -34,6 +34,12 @@
     --ring: 184 100% 38%;
 
     --radius: 0.75rem;
+
+    .bg-sidebar {
+      background-color: hsl(var(--background));
+      color: hsl(var(--foreground));
+    }
+
   }
 
   .dark {
@@ -64,6 +70,34 @@
     --border: 217 33% 25%;
     --input: 217 33% 25%;
     --ring: 184 100% 38%;
+
+    .bg-sidebar {
+      background-color: hsl(var(--background));
+      color: hsl(var(--foreground));
+    }
+
+    .bg-yellow-50{
+      background-color: hsl(var(--background));
+      color: hsl(var(--foreground));
+    }
+
+    .bg-gray-50 {
+      background-color: hsl(var(--background));
+      color: hsl(var(--foreground));
+    }
+
+    .hover\:bg-gray-50:hover {
+      transition: 0.5s;
+      background-color: hsl(var(--background));
+      color: hsl(var(--foreground));
+    }  
+
+    select{
+      background-color: hsl(var(--background));
+      color: hsl(var(--foreground));
+    }
+
+
   }
 }
 

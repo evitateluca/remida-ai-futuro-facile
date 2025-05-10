@@ -358,7 +358,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <div className="container-custom py-6">
         {/* Integration Manager Dialog */}
         <Dialog open={showIntegrationManager} onOpenChange={setShowIntegrationManager}>
