@@ -88,8 +88,9 @@ const Navbar = () => {
           
           {/* Mobile menu button */}
           <button 
-            className="md:hidden text-foreground hover:text-remida-teal" 
+            className="md:hidden text-foreground hover:text-remida-teal z-50" 
             onClick={toggleMobileMenu}
+            aria-label="Toggle mobile menu"
           >
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -97,45 +98,45 @@ const Navbar = () => {
         
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <div className="md:hidden pt-4 pb-2">
-            <nav className="flex flex-col space-y-3">
+          <div className="md:hidden fixed inset-0 z-40 bg-background/95 backdrop-blur-sm pt-20 pb-6 px-6 flex flex-col">
+            <nav className="flex flex-col space-y-6">
               <Link 
                 to="/" 
-                className="text-foreground hover:text-remida-teal transition-colors py-2"
-                onClick={toggleMobileMenu}
+                className="text-lg font-medium text-foreground hover:text-remida-teal transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
               >
                 Home
               </Link>
               <Link 
                 to="/about" 
-                className="text-foreground hover:text-remida-teal transition-colors py-2"
-                onClick={toggleMobileMenu}
+                className="text-lg font-medium text-foreground hover:text-remida-teal transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
               >
                 Chi Siamo
               </Link>
               <Link 
                 to="/features" 
-                className="text-foreground hover:text-remida-teal transition-colors py-2"
-                onClick={toggleMobileMenu}
+                className="text-lg font-medium text-foreground hover:text-remida-teal transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
               >
                 Funzionalità
               </Link>
               <Link 
                 to="/faq" 
-                className="text-foreground hover:text-remida-teal transition-colors py-2"
-                onClick={toggleMobileMenu}
+                className="text-lg font-medium text-foreground hover:text-remida-teal transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
               >
                 FAQ
               </Link>
               <Link 
                 to="/contact" 
-                className="text-foreground hover:text-remida-teal transition-colors py-2"
-                onClick={toggleMobileMenu}
+                className="text-lg font-medium text-foreground hover:text-remida-teal transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
               >
                 Contatti
               </Link>
               
-              <div className="flex items-center justify-between mt-4">
+              <div className="flex items-center justify-between mt-8 pt-8 border-t border-border">
                 <ThemeToggle />
                 
                 {user ? (
@@ -143,15 +144,23 @@ const Navbar = () => {
                     variant="destructive" 
                     onClick={() => {
                       signOut();
-                      toggleMobileMenu();
+                      setMobileMenuOpen(false);
                     }}
+                    className="flex items-center"
                   >
                     <LogOut className="mr-2 h-4 w-4" />
                     Logout
                   </Button>
                 ) : (
-                  <Button className="bg-remida-orange hover:bg-remida-orange/90" asChild>
-                    <Link to="/auth" onClick={toggleMobileMenu}>
+                  <Button 
+                    className="bg-remida-orange hover:bg-remida-orange/90 w-full" 
+                    asChild
+                  >
+                    <Link 
+                      to="/auth" 
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex justify-center"
+                    >
                       Accedi
                     </Link>
                   </Button>
