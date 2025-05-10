@@ -36,5 +36,8 @@
   "change_24h": "24h Change",
   "volume": "Volume",
   "market_cap": "Market Cap",
-  "sparkline": "Chart"
+  "sparkline": "Chart",
+  "switch_to_dark": "Switch to dark mode",
+  "switch_to_light": "Switch to light mode",
+  "theme": "Theme"
 }

@@ -5,65 +5,65 @@
 
 @layer base {
   :root {
-    --background: 0 0% 96%;  /* Light gray background */
-    --foreground: 180 100% 25%;  /* Teal text */
+    --background: 210 40% 98%;  /* Clean light background */
+    --foreground: 222 47% 11%;  /* Dark text */
 
     --card: 0 0% 100%;
-    --card-foreground: 180 100% 25%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 180 100% 25%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 180 100% 25%;  /* Teal primary */
-    --primary-foreground: 0 0% 98%;
+    --primary: 184 100% 38%;  /* Bright teal primary */
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 0 0% 96%;  /* Light gray secondary */
-    --secondary-foreground: 180 100% 25%;
+    --secondary: 210 40% 96%;  /* Light gray secondary */
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 0 0% 96%;
-    --muted-foreground: 180 70% 25%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
 
-    --accent: 16 100% 60%;  /* Orange accent */
-    --accent-foreground: 0 0% 98%;
+    --accent: 16 100% 65%;  /* Vibrant orange accent */
+    --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 180 100% 25% / 0.2;
-    --input: 180 100% 25% / 0.2;
-    --ring: 180 100% 25%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 184 100% 38%;
 
     --radius: 0.75rem;
   }
 
   .dark {
-    --background: 180 70% 10%;
-    --foreground: 0 0% 96%;
+    --background: 222 47% 11%;  /* Dark background */
+    --foreground: 210 40% 98%;  /* Light text */
 
-    --card: 180 70% 10%;
-    --card-foreground: 0 0% 96%;
+    --card: 222 47% 11%;
+    --card-foreground: 210 40% 98%;
 
-    --popover: 180 70% 10%;
-    --popover-foreground: 0 0% 96%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 40% 98%;
 
-    --primary: 0 0% 96%;
-    --primary-foreground: 180 70% 10%;
+    --primary: 184 100% 38%;  /* Keeping teal as primary */
+    --primary-foreground: 222 47% 11%;
 
-    --secondary: 180 50% 20%;
-    --secondary-foreground: 0 0% 96%;
+    --secondary: 217 33% 17%;  /* Darker secondary */
+    --secondary-foreground: 210 40% 98%;
 
-    --muted: 180 50% 20%;
-    --muted-foreground: 0 0% 70%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 16 100% 60%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 16 100% 65%;  /* Orange accent */
+    --accent-foreground: 210 40% 98%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 180 50% 50% / 0.3;
-    --input: 180 50% 50% / 0.3;
-    --ring: 180 50% 50% / 0.7;
+    --border: 217 33% 25%;
+    --input: 217 33% 25%;
+    --ring: 184 100% 38%;
   }
 }
 
@@ -100,10 +100,14 @@
   }
   
   .feature-card {
-    @apply bg-white rounded-xl p-6 shadow-md transition-all hover:shadow-lg border border-gray-100;
+    @apply bg-white dark:bg-remida-dark/60 rounded-xl p-6 shadow-md transition-all hover:shadow-lg border border-gray-100 dark:border-gray-800;
   }
   
   .input-field {
-    @apply w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-remida-teal;
+    @apply w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-remida-teal dark:bg-gray-800 dark:text-white;
+  }
+  
+  .glass-effect {
+    @apply bg-white/80 dark:bg-remida-dark/80 backdrop-blur-md border border-gray-200 dark:border-gray-800;
   }
 }
