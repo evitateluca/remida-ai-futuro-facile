@@ -72,8 +72,12 @@
     @apply border-border;
   }
 
+  html, body {
+    @apply min-h-screen;
+  }
+
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors;
     font-family: 'Inter', sans-serif;
   }
 
