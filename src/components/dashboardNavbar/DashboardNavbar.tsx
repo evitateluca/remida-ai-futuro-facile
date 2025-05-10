@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTranslation, Language } from '@/contexts/TranslationContext';
-import ThemeToggle from '@/components/ThemeToggle';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,7 +30,7 @@ const DashboardNavbar = ({
   };
 
   return (
-    <div className="bg-card border-b border-border px-4 py-2 flex justify-end items-center gap-4">
+    <div className="bg-white border-b px-4 py-2 flex justify-end items-center gap-4">
       {/* Notification Bell */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -63,9 +62,6 @@ const DashboardNavbar = ({
           )}
         </DropdownMenuContent>
       </DropdownMenu>
-
-      {/* Theme Toggle */}
-      <ThemeToggle />
 
       {/* Language Selector */}
       <DropdownMenu>
