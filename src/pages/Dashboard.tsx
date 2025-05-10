@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -388,7 +389,10 @@ const Dashboard = () => {
                 <Sidebar variant="sidebar" collapsible="icon">
                   <SidebarHeader className="px-4 py-2">
                     <div className="flex items-center justify-between">
-                      <h2 className="text-xl font-bold">ReMida Finance</h2>
+                      <div className="flex items-center">
+                        <Bitcoin className="mr-2 h-6 w-6 sidebar-logo text-remida-teal" />
+                        <h2 className="text-xl font-bold">ReMida Finance</h2>
+                      </div>
                       <SidebarTrigger />
                     </div>
                   </SidebarHeader>

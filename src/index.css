@@ -145,7 +145,7 @@
     @apply bg-white/80 dark:bg-remida-dark/80 backdrop-blur-md border border-gray-200 dark:border-gray-800;
   }
   
-  /* Add styles for collapsed sidebar icon display */
+  /* Improved styles for collapsed sidebar icon display */
   .group-data-\[collapsible\=icon\]:w-\[--sidebar-width-icon\] [data-sidebar="sidebar"] [data-sidebar="menu-button"] {
     @apply justify-center;
   }
@@ -154,7 +154,12 @@
     @apply hidden;
   }
   
-  .group-data-\[collapsible\=icon\]:w-\[--sidebar-width-icon\] [data-sidebar="sidebar"] [data-sidebar="header"] h2 {
+  /* Properly hide header text when collapsed but show logo/icon */
+  .group-data-\[state\=collapsed\] [data-sidebar="header"] h2 {
     @apply hidden;
+  }
+  
+  .group-data-\[state\=collapsed\] [data-sidebar="header"] .sidebar-logo {
+    @apply mx-auto;
   }
 }
