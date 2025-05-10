@@ -63,11 +63,13 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				// Custom colors for ReMida AI
+				// Custom colors for ReMida AI - modern and futuristic
 				remida: {
-					teal: '#008080',
-					gray: '#F5F5F5',
-					orange: '#FF5733',
+					teal: '#00B8C2',  // Updated brighter teal
+					gray: '#F3F4F6',  // Light gray
+					orange: '#FF7A50', // Vibrant orange
+					purple: '#9B87F5', // Modern purple
+					dark: '#1A1F2C',  // Deep dark for dark mode
 				},
 			},
 			borderRadius: {

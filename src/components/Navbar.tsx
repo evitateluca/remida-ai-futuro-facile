@@ -5,6 +5,7 @@ import { Menu, X, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import ThemeToggle from '@/components/ThemeToggle';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +22,7 @@ const Navbar = () => {
   };
 
   return (
-    <header className="bg-white shadow-sm">
+    <header className="bg-card shadow-sm border-b border-border">
       <div className="container-custom py-4">
         <div className="flex justify-between items-center">
           {/* Logo */}
@@ -32,25 +33,27 @@ const Navbar = () => {
           
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="text-gray-700 hover:text-remida-teal transition-colors">
+            <Link to="/" className="text-foreground hover:text-remida-teal transition-colors">
               Home
             </Link>
-            <Link to="/about" className="text-gray-700 hover:text-remida-teal transition-colors">
+            <Link to="/about" className="text-foreground hover:text-remida-teal transition-colors">
               Chi Siamo
             </Link>
-            <Link to="/features" className="text-gray-700 hover:text-remida-teal transition-colors">
+            <Link to="/features" className="text-foreground hover:text-remida-teal transition-colors">
               Funzionalità
             </Link>
-            <Link to="/faq" className="text-gray-700 hover:text-remida-teal transition-colors">
+            <Link to="/faq" className="text-foreground hover:text-remida-teal transition-colors">
               FAQ
             </Link>
-            <Link to="/contact" className="text-gray-700 hover:text-remida-teal transition-colors">
+            <Link to="/contact" className="text-foreground hover:text-remida-teal transition-colors">
               Contatti
             </Link>
           </nav>
           
           {/* Call to action */}
           <div className="hidden md:flex items-center gap-4">
+            <ThemeToggle />
+            
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -85,7 +88,7 @@ const Navbar = () => {
           
           {/* Mobile menu button */}
           <button 
-            className="md:hidden text-gray-500 hover:text-gray-700" 
+            className="md:hidden text-foreground hover:text-remida-teal" 
             onClick={toggleMobileMenu}
           >
             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -98,59 +101,62 @@ const Navbar = () => {
             <nav className="flex flex-col space-y-3">
               <Link 
                 to="/" 
-                className="text-gray-700 hover:text-remida-teal transition-colors py-2"
+                className="text-foreground hover:text-remida-teal transition-colors py-2"
                 onClick={toggleMobileMenu}
               >
                 Home
               </Link>
               <Link 
                 to="/about" 
-                className="text-gray-700 hover:text-remida-teal transition-colors py-2"
+                className="text-foreground hover:text-remida-teal transition-colors py-2"
                 onClick={toggleMobileMenu}
               >
                 Chi Siamo
               </Link>
               <Link 
                 to="/features" 
-                className="text-gray-700 hover:text-remida-teal transition-colors py-2"
+                className="text-foreground hover:text-remida-teal transition-colors py-2"
                 onClick={toggleMobileMenu}
               >
                 Funzionalità
               </Link>
               <Link 
                 to="/faq" 
-                className="text-gray-700 hover:text-remida-teal transition-colors py-2"
+                className="text-foreground hover:text-remida-teal transition-colors py-2"
                 onClick={toggleMobileMenu}
               >
                 FAQ
               </Link>
               <Link 
                 to="/contact" 
-                className="text-gray-700 hover:text-remida-teal transition-colors py-2"
+                className="text-foreground hover:text-remida-teal transition-colors py-2"
                 onClick={toggleMobileMenu}
               >
                 Contatti
               </Link>
               
-              {user ? (
-                <Button 
-                  variant="destructive" 
-                  onClick={() => {
-                    signOut();
-                    toggleMobileMenu();
-                  }}
-                  className="w-full mt-2"
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Logout
-                </Button>
-              ) : (
-                <Button className="bg-remida-orange hover:bg-remida-orange/90 w-full mt-2" asChild>
-                  <Link to="/auth" onClick={toggleMobileMenu}>
-                    Accedi
-                  </Link>
-                </Button>
-              )}
+              <div className="flex items-center justify-between mt-4">
+                <ThemeToggle />
+                
+                {user ? (
+                  <Button 
+                    variant="destructive" 
+                    onClick={() => {
+                      signOut();
+                      toggleMobileMenu();
+                    }}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </Button>
+                ) : (
+                  <Button className="bg-remida-orange hover:bg-remida-orange/90" asChild>
+                    <Link to="/auth" onClick={toggleMobileMenu}>
+                      Accedi
+                    </Link>
+                  </Button>
+                )}
+              </div>
             </nav>
           </div>
         )}
